@@ -5,11 +5,12 @@ import { Input } from '@/components/ui/input'
 import axiosFetch from '@/lib/axiosFetch'
 import { useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
+import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 
 type RegisterInput = {
     username: string,
-    email?: string,
+    email: string,
     password: string,
     confirmPassword: string
 }
@@ -77,6 +78,7 @@ const Register = () => {
 
                         <div>
                             <Input {...register("email", {
+                                required: 'email is required',
                                 pattern: {
                                     value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                                     message: 'invalid email'
@@ -109,6 +111,10 @@ const Register = () => {
                             placeholder='confirm Password'/>
                             {errors.confirmPassword && <span className='font-semibold text-red-700'>{errors.confirmPassword.message}</span>}
                         </div>
+
+                        <Link className='font-medium' to='/login'>
+                            Already have an account? <span className='text-blue-600 underline-offset-2 hover:underline'>Login</span>
+                        </Link>
 
                         <Button 
                         disabled={loading}

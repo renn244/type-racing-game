@@ -34,3 +34,12 @@ model Userinfo {
 
   user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+// use crons job to delete this later on
+model Refreshtoken {
+  id        String   @id @default(cuid())
+  
+  userId    String   @unique
+  token     String   @unique
+  expiresAt DateTime 
+}

@@ -4,6 +4,8 @@ import RegisterDto from './dto/Register.dto';
 import * as bcrypt from 'bcrypt';
 import { Prisma, User } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
+import { uuid } from 'uuidv4';
+
 @Injectable()
 export class AuthService {
     constructor(
@@ -100,18 +102,22 @@ export class AuthService {
             createAt: user.createdAt
         }
 
+        const access_token = this.jwtService.sign(payload, {
+            secret: process.env.JWT_SECRET,
+            expiresIn: '5m'
+        })
+
+        const refresh_token = await this.generateRefreshToken(user.id)
+
         return {
-            access_token: this.jwtService.sign(payload, {
-                secret: process.env.JWT_SECRET,
-                expiresIn: '5m'
-            })
+            access_token: access_token,
+            refresh_token: refresh_token
         }
     }
 
     async checkUser(req: any) {
         const userId = req.user.sub;
-
-        if(!userId) {
+        if(userId) {
             const getUser = await this.prisma.user.findFirst({
                 where: {
                     id: userId
@@ -139,5 +145,65 @@ export class AuthService {
                 message: 'user not found'
             })
         }
+    }
+
+    async generateRefreshToken(userId: string) {
+        
+        if (!userId) {
+            throw new GoneException('userId does not exist')
+        }
+
+        const deleteRefreshToken = await this.prisma.refreshtoken.deleteMany({
+            where: {
+                userId: userId
+            }
+        })
+
+        const refresh_token = uuid()
+        const saveRefreshToken = await this.prisma.refreshtoken.create({
+            data: {
+                userId: userId,
+                token: refresh_token,
+                expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 14) // 2 weeks
+            }
+        })
+
+        return saveRefreshToken.token
+    }
+
+    async refreshToken(refreshToken: string) {
+        
+        if (!refreshToken) {
+            throw new GoneException({
+                name: 'refreshToken',
+                message: 'refresh token does not exist'
+            })    
+        }
+        
+        const getRefreshToken = await this.prisma.refreshtoken.findFirst({
+            where: {
+                AND: [
+                    {token: refreshToken},
+                    {expiresAt: {
+                        gt: new Date()
+                    }}
+                ]
+            }
+        })
+
+        if (!getRefreshToken) {
+            throw new GoneException({
+                name: 'refreshToken',
+                message: 'refresh token is invalid'
+            })
+        }
+
+        const user = await this.prisma.user.findFirst({
+            where: {
+                id: getRefreshToken.userId
+            }
+        })
+
+        return this.login(user)
     }
 }

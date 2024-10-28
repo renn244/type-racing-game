@@ -56,20 +56,20 @@ const Challenge = () => {
                             {time} seconds
                         </h2>
                     </div>
-                    <p className="max-w-[900px] w-full mx-auto text-2xl font-medium p-3 mt-2 text-center">
+                    <p className="max-w-[900px] w-full mx-auto text-2xl font-medium p-3 mt-2 text-center unselectable cursor-text">
                         {challenge.split("").map((char, i) => {
                             if (typed.length <= i) {
 
                                 if (i === typed.length) {
-                                    return <span key={i} className="underline  mx-[1px] text-slate-600">{char}</span>
+                                    return <span key={i} className="underline  mx-[1px] text-muted-foreground">{char}</span>
                                 }
 
-                                return <span key={i} className="text-slate-600">{char}</span>
+                                return <span key={i} className="text-muted-foreground">{char}</span>
 
                             }
                             else if (typed[i] === char) {
 
-                                return <span key={i} className="text-black">{char}</span>
+                                return <span key={i} className="text-primary">{char}</span>
 
                             } else {
 

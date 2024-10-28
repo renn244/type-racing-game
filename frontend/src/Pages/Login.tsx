@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import axiosFetch from "@/lib/axiosFetch";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 type LoginInput = {
@@ -27,7 +28,7 @@ const Login = () => {
             validateStatus: () => true
         })
 
-        if (response.status === 401) { // handling the wrong username and password
+        if (response.status === 410) { // handling the wrong username and password
             if (response.data.name) {
                 setError(response.data.name, {
                     type: 'manual',
@@ -44,6 +45,7 @@ const Login = () => {
         }
 
         localStorage.setItem('access_token', response.data.access_token)
+        localStorage.setItem('refresh_token', response.data.refresh_token)
 
         setLoading(false)
         navigate('/')
@@ -87,6 +89,10 @@ const Login = () => {
                             />
                             {errors.password && <span className="font-semibold text-red-700">{errors.password.message}</span>}
                         </div>
+                        
+                        <Link className="font-medium" to="/register">
+                            Don't have an account? <span className="text-blue-600 underline-offset-2 hover:underline">Register</span> 
+                        </Link>
 
                         <Button
                         disabled={loading}

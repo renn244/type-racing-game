@@ -24,4 +24,9 @@ export class AuthController {
     async checl(@Request() req: any) {
         return this.authService.checkUser(req)
     }
+
+    @Post('refreshtoken')
+    async refreshToken(@Body() body: any) {
+        return this.authService.refreshToken(body.RefreshToken)
+    }
 }
