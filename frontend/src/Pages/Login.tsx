@@ -6,7 +6,6 @@ import axiosFetch from "@/lib/axiosFetch";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 
 type LoginInput = {
     username: string;
@@ -16,7 +15,6 @@ type LoginInput = {
 const Login = () => {
     const [loading, setLoading] = useState(false)
     const { register, handleSubmit, formState: { errors }, setError} = useForm<LoginInput>()
-    const navigate = useNavigate()
 
     const onSubmit: SubmitHandler<LoginInput> = async (data) => {
         setLoading(true)
@@ -48,7 +46,8 @@ const Login = () => {
         localStorage.setItem('refresh_token', response.data.refresh_token)
 
         setLoading(false)
-        navigate('/')
+        
+        window.location.assign('/')
     }
 
     return (

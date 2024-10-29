@@ -10,9 +10,16 @@ import {
     SheetDescription,
 } from '@/components/ui/sheet'
 import Profile from "./Profile"
+import { LogOut, Settings2, Sword, UserRound } from "lucide-react"
 
 const NavBar = () => {
     const [isOpen, setIsOpen] = useState(false)
+
+    const Logout = () => {
+        localStorage.removeItem('access_token')
+        localStorage.removeItem('refresh_token')
+        window.location.assign('/')
+    }
 
     const { user } = useAuthContext()
 
@@ -25,18 +32,17 @@ const NavBar = () => {
                     </h2>
                 </div>
                 <div className="flex justify-around items-center max-w-[400px] w-full font-semibold">
-                    <Link to={'/challenges'}>
+                    <Link className="underline-offset-2 hover:underline" to={'/challenges'}>
                         Challenges
                     </Link>
-                    <Link to={'/'}>
+                    <Link className="underline-offset-2 hover:underline" to={'/'}>
                         Dashboard
                     </Link>
                     {!user && 
-                        <Link to={'/login'}>
+                        <Link className="underline-offset-2 hover:underline" to={'/login'}>
                             Login
                         </Link>
                     }
-
                     {user &&
                         <Sheet open={isOpen} onOpenChange={setIsOpen} >
                             <SheetTrigger>
@@ -53,19 +59,31 @@ const NavBar = () => {
                                         </SheetDescription>
                                     }
                                 </SheetHeader>
-                                <nav className="flex flex-col gap-3 px-4 mt-9">
-                                    <Link to={'/profile'}>
-                                        Profile
-                                    </Link> 
-                                    <Link to={'/settings'}>
-                                        Settings
-                                    </Link>
-                                    <Link to={'/challenges'}>
-                                        Challenges
-                                    </Link>
-                                    <Link to={'/logout'}>
-                                        Logout
-                                    </Link>
+                                <nav className="flex flex-col gap-3 px-4 mt-9 font-semibold text-lg">
+                                    <div className="flex justify-start gap-3">
+                                        <UserRound />
+                                        <Link to={'/profile'}>
+                                            Profile
+                                        </Link> 
+                                    </div>
+                                    <div className="flex justify-start gap-3">
+                                        <Settings2 />
+                                        <Link to={'/settings'}>
+                                            Settings
+                                        </Link>
+                                    </div>
+                                    <div className="flex justify-start gap-3">
+                                        <Sword />
+                                        <Link to={'/challenges'}>
+                                            Challenges
+                                        </Link>
+                                    </div>
+                                    <div className="flex justify-start gap-3">
+                                        <LogOut />
+                                        <button onClick={() => Logout()}>
+                                            Logout
+                                        </button>
+                                    </div>
                                 </nav>
                             </SheetContent>
                         </Sheet>

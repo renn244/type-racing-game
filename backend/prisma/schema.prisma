@@ -31,6 +31,7 @@ model Userinfo {
   id        String   @id @default(cuid())
   userId    String   @unique
   // add later
+  completedChallenges Challenge[]
 
   user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -42,4 +43,24 @@ model Refreshtoken {
   userId    String   @unique
   token     String   @unique
   expiresAt DateTime 
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+// this is the keyboard challenge that they need to type
+model Challenge {
+  id          String   @id @default(cuid())
+  title       String   @unique
+  description String
+  challenge   String   @unique
+  difficulty  Difficulty
+
+  userCompleted Userinfo[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
