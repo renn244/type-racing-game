@@ -1,5 +1,5 @@
 import { GoneException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateChallengeDto } from './dto/CreateChallenge.dto';
 import { Prisma } from '@prisma/client';
 
@@ -167,5 +167,23 @@ export class ChallengeService {
                 throw new InternalServerErrorException('internal server error')
             }
         }
+    }
+
+    async getFinishChallenges(userId: string) {
+        const finishedChallenges = await this.prisma.userinfo.findMany({
+            where: {
+                userId: userId
+            },
+            include: {
+                completedChallenges: {
+                    select: {
+                        title: true,
+                        difficulty: true
+                    }
+                }
+            }
+        })
+
+        return finishedChallenges
     }
 }

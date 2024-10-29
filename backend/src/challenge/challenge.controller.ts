@@ -1,7 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request } from '@nestjs/common';
 import { ChallengeService } from './challenge.service';
 import { CreateChallengeDto } from './dto/CreateChallenge.dto';
-import { query } from 'express';
 
 @Controller('challenge')
 export class ChallengeController {
