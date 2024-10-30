@@ -38,19 +38,19 @@ function App() {
           <div className='flex flex-col md:flex-row justify-between items-center'>
             <p>&copy; 2024 Type. All rights reserved</p>
             <div className='flex space-x-4 mt-4 md:mt-0'>
-              <Link to='https://github.com' target='_blank' className='text-lg text-muted-foreground'>
+              <Link to='https://github.com' target='_blank' className='text-lg text-muted-foreground hover:text-black'>
                 <GithubIcon size={24} />
               </Link>
-              <Link to='https://twitter.com' target='_blank' className='text-lg text-muted-foreground'>
+              <Link to='https://twitter.com' target='_blank' className='text-lg text-muted-foreground hover:text-black'>
                 <TwitterIcon size={24} />
               </Link>
-              <Link to='https://github.com' target='_blank' className='text-lg text-muted-foreground'>
+              <Link to='https://github.com' target='_blank' className='text-lg text-muted-foreground hover:text-black'>
                 <TwitchIcon size={24} />
               </Link>
-              <Link to='https://github.com' target='_blank' className='text-lg text-muted-foreground'>
+              <Link to='https://github.com' target='_blank' className='text-lg text-muted-foreground hover:text-black'>
                 <FacebookIcon size={24} />
               </Link>
-              <Link to='https://github.com' target='_blank' className='text-lg text-muted-foreground'>
+              <Link to='https://github.com' target='_blank' className='text-lg text-muted-foreground hover:text-black'>
                 <LinkedinIcon size={24} />
               </Link>
             </div>

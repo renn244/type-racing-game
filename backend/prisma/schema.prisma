@@ -28,6 +28,8 @@ model User {
   role      ROLE?     @default(USER)
   userinfo  Userinfo?
 
+  completedChallenges ChallengeCompleted[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -36,7 +38,6 @@ model Userinfo {
   id        String   @id @default(cuid())
   userId    String   @unique
   // add later
-  completedChallenges Challenge[]
 
   user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -64,8 +65,25 @@ model Challenge {
   challenge   String   @unique
   difficulty  Difficulty
 
-  userCompleted Userinfo[]
+  userCompleted ChallengeCompleted[]
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model ChallengeCompleted {
+  id            String @id @default(cuid())
+  challengeId   String
+  userId        String 
+
+  typed         String
+  accuracy      Int
+  wpm           Int
+  time          Int
+
+  userInfo      User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge     Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  dateCompleted          DateTime @default(now())
+  @@unique([challengeId, userId])
 }

@@ -1,4 +1,4 @@
-import KeyboardTypeAnimation from "@/components/pageComponents/adminDashboard/Home/KeyboardTypeAnimation"
+import KeyboardTypeAnimation from "@/components/pageComponents/Home/KeyboardTypeAnimation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 

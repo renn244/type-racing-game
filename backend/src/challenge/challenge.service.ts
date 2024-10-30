@@ -2,6 +2,7 @@ import { GoneException, Injectable, InternalServerErrorException, NotFoundExcept
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateChallengeDto } from './dto/CreateChallenge.dto';
 import { Prisma } from '@prisma/client';
+import { ChallengeResultDto } from './dto/ChallengeResult.dto';
 
 @Injectable()
 export class ChallengeService {
@@ -69,6 +70,44 @@ export class ChallengeService {
         return challenge
     }
 
+    async createChallengeResut(body: ChallengeResultDto, req: any) {
+        try {
+            const userId = req.user.sub
+            console.log(userId)
+            // should handle if he retry agai nbecause this will throw an error so make sure to delete it first
+
+            const CreateChallengeResult = await this.prisma.challengeCompleted.create({
+                data: {
+                    userId: userId,
+                    challengeId: body.challengeId,
+                    typed: body.typed,
+                    wpm: body.wpm,
+                    accuracy: body.accuracy,
+                    time: body.time,
+                    
+                }
+            })
+
+            return CreateChallengeResult
+        } catch (error) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError) {
+                if(error.code === 'P2002') {
+                    // i don't know if this will be used kase i hahandle din naman kung nag eexist na
+                    if (error.meta.target[0]) {
+                        throw new GoneException({
+                            name: error.meta.target[0],
+                            message: 'you have already submitted on this challenge'
+                        })
+                    }
+                }
+                console.log(error)
+                throw new GoneException('unknown error in the database')
+            } else {
+                throw new InternalServerErrorException('internal server error')
+            }
+        }
+    }
+
     // should this be only accessible by admin?
     async createChallenge({ title, description, challenge, difficulty } : CreateChallengeDto, req: any) { 
         try {
@@ -95,9 +134,9 @@ export class ChallengeService {
                     
                     throw new GoneException('unknown error in the database')
                 }
-            } else {
-                throw new InternalServerErrorException('internal server error')
-            }
+            } 
+
+            throw new InternalServerErrorException('internal server error')
         }
     }
 
@@ -139,9 +178,8 @@ export class ChallengeService {
                 }
                 
                 throw new GoneException('unknown error in the database')
-            } else {
-                throw new InternalServerErrorException('internal server error')
             }
+            throw new InternalServerErrorException('internal server error')
         }
     }
 
@@ -163,22 +201,22 @@ export class ChallengeService {
                     })
                 }
                 throw new GoneException('unknown error in the database')
-            } else {
-                throw new InternalServerErrorException('internal server error')
-            }
+            } 
+
+            throw new InternalServerErrorException('internal server error')
+            
         }
     }
 
     async getFinishChallenges(userId: string) {
-        const finishedChallenges = await this.prisma.userinfo.findMany({
+        const finishedChallenges = await this.prisma.user.findMany({
             where: {
-                userId: userId
+                id: userId
             },
             include: {
                 completedChallenges: {
-                    select: {
-                        title: true,
-                        difficulty: true
+                    include: {
+                        challenge: true
                     }
                 }
             }

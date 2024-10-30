@@ -43,7 +43,7 @@ const AdminChallenge = () => {
     }
 
     return (
-        <div className="w-full h-full">
+        <div className="w-full min-h-[750px]">
             <div className="max-w-[1200px] w-full mx-auto py-7">
                 <div className="max-w-[1000px] space-y-4">
                     <ChallengesTableHeader />

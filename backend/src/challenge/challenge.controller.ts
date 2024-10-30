@@ -1,6 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ChallengeService } from './challenge.service';
 import { CreateChallengeDto } from './dto/CreateChallenge.dto';
+import { query } from 'express';
+import { ChallengeResultDto } from './dto/ChallengeResult.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('challenge')
 export class ChallengeController {
@@ -13,6 +16,17 @@ export class ChallengeController {
         return this.challengeService.getChallenges(query)
     }
     
+    @Get('getChallenge')
+    async getChallenge(@Query('challengeId') challengeId: string) {
+        return this.challengeService.getChallenge(challengeId)
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('challengeResult')
+    async createChallengeResult(@Body() body: ChallengeResultDto, @Request() req: any) {
+        return this.challengeService.createChallengeResut(body, req)
+    }
+
     @Post('createChallenge') 
     async createChallenge(@Request() req: any, @Body() body: CreateChallengeDto) {
         return this.challengeService.createChallenge(body, req)

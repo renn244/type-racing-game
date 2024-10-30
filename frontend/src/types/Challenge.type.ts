@@ -28,6 +28,12 @@ export type CreateChallengeForm = {
     difficulty: difficulty
 }
 
-
 export type updateChallengeForm = {} & Partial<CreateChallengeForm> // not sure if im gonna use this
 
+export type ChallengeResultData = {
+    challengeId: Challenge['id']
+    typed: string,
+    accuracy: number, 
+    wpm: number, // words per minute
+    time: number, // time that it takes him to finish (seconds)
+}

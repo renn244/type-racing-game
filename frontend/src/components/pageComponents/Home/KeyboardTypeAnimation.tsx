@@ -60,9 +60,9 @@ const KeyboardTypeAnimation = () => {
                                 return
                             }
 
-                            return  <span key={i} className={`${char == keyUp && 'bg-black text-white'} text-lg p-2 border-2  rounded-md w-[40px] mx-1 uppercase`}>
+                            return  <div key={i} className={`${char == keyUp ? 'bg-primary text-white' : 'bg-background text-muted-foreground'} text-lg p-2 border-2  rounded-md w-[40px] mx-1 uppercase`}>
                                         {char}
-                                    </span>
+                                    </div>
                         })}
                     </div>
                     <div className="flex pl-4">
@@ -71,7 +71,7 @@ const KeyboardTypeAnimation = () => {
                                 return
                             }
 
-                            return <span key={i} className={`${char == keyUp && 'bg-black text-white'} text-lg p-2 border-2 rounded-md w-[40px] mx-1 uppercase`}>
+                            return <span key={i} className={`${char == keyUp ? 'bg-primary text-white' : 'bg-background text-muted-foreground'} text-lg p-2 border-2 rounded-md w-[40px] mx-1 uppercase`}>
                             {char}
                         </span>
                         })}
@@ -82,7 +82,7 @@ const KeyboardTypeAnimation = () => {
                                 return
                             }
 
-                            return <span key={i} className={`${char == keyUp && 'bg-black text-white'} text-lg p-2 border-2 rounded-md w-[40px] mx-1 uppercase`}>
+                            return <span key={i} className={`${char == keyUp ? 'bg-primary text-white' : 'bg-background text-muted-foreground'} text-lg p-2 border-2 rounded-md w-[40px] mx-1 uppercase`}>
                             {char}
                         </span>
                         })}
