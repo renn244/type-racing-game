@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ChallengeService } from './challenge.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { Difficulty, Prisma } from '@prisma/client';
+import { ChallengeCategory, Difficulty, Prisma } from '@prisma/client';
 import { contains } from 'class-validator';
 import { GoneException, NotFoundException } from '@nestjs/common';
 import { ChallengeResultDto } from './dto/ChallengeResult.dto';
@@ -57,9 +57,9 @@ describe('ChallengeService', () => {
   describe('getChallenges', () => {
     const mockChallenges = [
       { id: '2', title: 'Challenge 1', description: 'Description 1', challenge: 'Solve problem 1', difficulty: 'EASY' as Difficulty,
-         userComplete: [], createdAt: new Date(), updatedAt: new Date() },
+         userComplete: [], category: 'Daily' as ChallengeCategory, createdAt: new Date(), updatedAt: new Date() },
       { id: '3', title: 'Challenge 2', description: 'Description 2', challenge: 'Solve problem 2', difficulty: 'MEDIUM' as Difficulty,
-         userComplete: [], createdAt: new Date(), updatedAt: new Date() }
+         userComplete: [], category: 'Daily' as ChallengeCategory, createdAt: new Date(), updatedAt: new Date() }
     ];
 
     it('should return paginated challenges and hasNext as true if there are more challenge when count', async () => {
@@ -112,7 +112,7 @@ describe('ChallengeService', () => {
   describe('getChallenge', () => {
     it('should return a challenge if it exists', async () => {
       const mockChallenge = { id: '2', title: 'Challenge 1', description: 'Description 1', challenge: 'Solve problem 1', difficulty: 'EASY' as Difficulty,
-         userComplete: [], createdAt: new Date(), updatedAt: new Date() };
+         userComplete: [], category: 'Daily' as ChallengeCategory, createdAt: new Date(), updatedAt: new Date() };
       
       jest.spyOn(prisma.challenge, 'findUnique').mockResolvedValue(mockChallenge);
 
@@ -188,8 +188,8 @@ describe('ChallengeService', () => {
 
   describe('createChallenge', () => {
     const mockExpectedChallenge = { id: '2', title: 'Challenge 1', description: 'Description 1', challenge: 'Solve problem 1', difficulty: 'EASY' as Difficulty,
-      userComplete: [], createdAt: new Date(), updatedAt: new Date() };
-    const mockChallenge = { title: 'Challenge 1', description: 'Description 1', challenge: 'Solve problem 1', difficulty: 'EASY' as Difficulty };
+      userComplete: [], category: 'Daily' as ChallengeCategory, createdAt: new Date(), updatedAt: new Date() };
+    const mockChallenge = { title: 'Challenge 1', description: 'Description 1', challenge: 'Solve problem 1', difficulty: 'EASY' as Difficulty,  category: 'Daily' as ChallengeCategory, };
     it('should create a challenge and return the created challenge', async () => {
       
       jest.spyOn(prisma.challenge, 'create').mockResolvedValue(mockExpectedChallenge);
@@ -235,8 +235,8 @@ describe('ChallengeService', () => {
 
 
   describe('patchChallenge', () => {
-    const mockChallenge = { title: 'Challenge 1', description: 'Description 1', challenge: 'Solve problem 1', difficulty: 'EASY' as Difficulty };
-    const mockExpectedChallenge = { id: '2', title: 'Challenge 1', description: 'Description 1', challenge: 'Solve problem 1', difficulty: 'EASY' as Difficulty,
+    const mockChallenge = { title: 'Challenge 1', description: 'Description 1', challenge: 'Solve problem 1', difficulty: 'EASY' as Difficulty,  category: 'Daily' as ChallengeCategory, };
+    const mockExpectedChallenge = { id: '2', title: 'Challenge 1', description: 'Description 1', challenge: 'Solve problem 1', difficulty: 'EASY' as Difficulty,  category: 'Daily' as ChallengeCategory,
       userComplete: [], createdAt: new Date(), updatedAt: new Date() };
 
     it('should update a challenge and return the updated challenge', async () => {
@@ -299,7 +299,7 @@ describe('ChallengeService', () => {
 
   describe('deleteChallenge', () => {
     const mockExpectedChallenge = { id: '2', title: 'Challenge 1', description: 'Description 1', challenge: 'Solve problem 1', difficulty: 'EASY' as Difficulty,
-      userComplete: [], createdAt: new Date(), updatedAt: new Date() };
+      userComplete: [], category: 'Daily' as ChallengeCategory, createdAt: new Date(), updatedAt: new Date() };
     
     it('should delete a challenge', async () => {
       jest.spyOn(prisma.challenge, 'delete').mockResolvedValue(mockExpectedChallenge);

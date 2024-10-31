@@ -2,7 +2,6 @@ import LoadingSpinner from "@/components/common/LoadingSpinner"
 import AdminTablePopOver from "@/components/pageComponents/adminDashboard/adminTablePopOver/AdminTablePopOver"
 import ChallengesTableHeader from "@/components/pageComponents/adminDashboard/ChallengesTableHeader"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import axiosFetch from "@/lib/axiosFetch"
 import { Challenge } from "@/types/Challenge.type"
@@ -10,6 +9,8 @@ import { useQuery } from "@tanstack/react-query"
 import { format } from 'date-fns'
 import { useState } from "react"
 import { useSearchParams } from "react-router-dom"
+
+// add the categories in the table? and might also have filters for it
 
 const AdminChallenge = () => {
     const [searchParams, setSearchParams] = useSearchParams()

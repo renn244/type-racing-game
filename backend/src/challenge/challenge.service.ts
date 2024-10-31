@@ -1,11 +1,12 @@
 import { GoneException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateChallengeDto } from './dto/CreateChallenge.dto';
-import { Prisma } from '@prisma/client';
+import { ChallengeCategory, Prisma } from '@prisma/client';
 import { ChallengeResultDto } from './dto/ChallengeResult.dto';
 
 @Injectable()
 export class ChallengeService {
+    DailyChallengeId = 'cm2x7yyn6000522b1w7vznwux' // this will be changed through cronjobs
     constructor(
         private readonly prisma: PrismaService
     ) {}
@@ -27,7 +28,52 @@ export class ChallengeService {
         return search
     }
 
-    // parameters of request? body for filter or selection? and pagination?
+    async getDailyChallenge() {
+        const getDailychallenge = await this.prisma.challenge.findFirst({
+            where: {
+                id: this.DailyChallengeId
+            }
+        })
+
+        return getDailychallenge
+    }
+
+    async getChallengesForUser(query: {search: string, category: ChallengeCategory}) {
+        let catogoryQuery = {}
+        if (query.category) {
+            catogoryQuery = {
+                category: query.category
+            }
+        }
+
+        const challenges = await this.prisma.challenge.findMany({
+            where: {
+                title: {
+                    contains: query.search,
+                    mode: 'insensitive',
+                },
+                ...catogoryQuery
+            },
+            take: 30
+        })
+
+        const organizedChallenges = {
+            featured: [],
+            daily: [],
+            practice: []
+        }
+
+        challenges.forEach(challenge => {
+            const category = challenge.category.toLowerCase();
+            
+            if(organizedChallenges[category]) {
+                organizedChallenges[category].push(challenge)
+            }
+        })
+
+        return organizedChallenges
+    }
+
     async getChallenges(query: { page: string, search: string }) {
         const page = parseInt(query.page)
         const limit = 10
@@ -105,6 +151,8 @@ export class ChallengeService {
                 }
             })
 
+            const updateBiometrics = this.UpdateUserBiometrics(userId)
+
             return CreateChallengeResult
         } catch (error) {
             if(error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -124,7 +172,7 @@ export class ChallengeService {
     }
 
     // should this be only accessible by admin?
-    async createChallenge({ title, description, challenge, difficulty } : CreateChallengeDto, req: any) { 
+    async createChallenge({ title, description, challenge, difficulty,category } : CreateChallengeDto, req: any) { 
         try {
             const createChallengePrisma = await this.prisma.challenge.create({
                 data: {
@@ -132,6 +180,7 @@ export class ChallengeService {
                     description,
                     difficulty,
                     challenge,
+                    category
                 }
             })
 
@@ -156,7 +205,7 @@ export class ChallengeService {
     }
 
 
-    async patchChallenge({ title, description, challenge, difficulty } : CreateChallengeDto, challengeId: string) {
+    async patchChallenge({ title, description, challenge, difficulty, category } : CreateChallengeDto, challengeId: string) {
         try {
             const updateChallenge = await this.prisma.challenge.update({
                 where: {
@@ -166,7 +215,8 @@ export class ChallengeService {
                     title,
                     description,
                     difficulty,
-                    challenge
+                    challenge,
+                    category
                 }
             })
     
@@ -239,4 +289,44 @@ export class ChallengeService {
 
         return finishedChallenges
     }
+
+    async UpdateUserBiometrics(userId: string) {
+        const getAllChallengesCompleted = await this.prisma.challengeCompleted.findMany({
+            where: {
+                userId: userId
+            }
+        })
+
+        let NumberofCompletedChallenges = getAllChallengesCompleted.length
+        let accuracy = 0
+        let wpm = 0
+        let timePracticed = 0
+
+        await getAllChallengesCompleted.forEach((completedChallenge) => {
+            accuracy += completedChallenge.accuracy
+            wpm += completedChallenge.wpm
+            timePracticed += completedChallenge.time
+        })
+
+        let averageAccuracy = accuracy / NumberofCompletedChallenges
+        let averageWpm = wpm / NumberofCompletedChallenges
+        
+        const hours = Math.floor(timePracticed / 3600)
+        const minutes = Math.floor((timePracticed % 3600) / 60)
+        const seconds = timePracticed % 60
+        const time = `${hours}h ${minutes}m ${seconds}s`
+
+        const saveBiometrics = await this.prisma.userBiometric.update({
+            where: {
+                userId: userId
+            },
+            data: {
+                TimePracticed: time,
+                AverageAccuracy: averageAccuracy,
+                AverageWpm: averageWpm
+            }
+        })
+
+        return saveBiometrics
+   }
 }

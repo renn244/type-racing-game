@@ -34,6 +34,14 @@ export class AuthService {
                     userId: user.id
                 }
             })
+
+            const userBiometrics = await this.prisma.userBiometric.create({
+                data: {
+                    userId: user.id,
+                    AverageAccuracy: 0,
+                    AverageWpm: 0,
+                }
+            })
     
             return user;
         } catch (error) {

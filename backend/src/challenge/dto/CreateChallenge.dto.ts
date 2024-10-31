@@ -1,5 +1,5 @@
 import { IsString, IsEnum, MinLength, MaxLength } from 'class-validator';
-import { Difficulty } from '@prisma/client';
+import { ChallengeCategory, Difficulty } from '@prisma/client';
 
 export class CreateChallengeDto {
     @IsString()
@@ -14,5 +14,8 @@ export class CreateChallengeDto {
     challenge: string;
 
     @IsEnum(Difficulty)
-    difficulty: Difficulty;    
+    difficulty: Difficulty;
+    
+    @IsEnum(ChallengeCategory)
+    category: ChallengeCategory
 }

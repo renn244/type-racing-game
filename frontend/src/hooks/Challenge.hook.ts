@@ -24,7 +24,7 @@ const useChallenge = () => {
     } 
 
     const handleKeyDown = async (setTyped: Setter<string>, setKeyUp: Setter<string>, e: KeyboardEvent) => {
-        if (/^[a-zA-Z0-9']$/.test(e.key) && !e.repeat) { // check if it's a letter and not a repeat
+        if (/^[a-zA-Z0-9'.-:?,]$/.test(e.key) && !e.repeat) { // check if it's a letter and not a repeat
             setTyped(prev => prev + e.key);
             setKeyUp(e.key)
         } else if (e.key === "Backspace") {

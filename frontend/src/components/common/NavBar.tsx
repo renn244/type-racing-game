@@ -37,8 +37,11 @@ const NavBar = () => {
                     <Link className="underline-offset-2 hover:underline" to={'/challenges'}>
                         Challenges
                     </Link>
-                    <Link className="underline-offset-2 hover:underline" to={'/'}>
+                    <Link className="underline-offset-2 hover:underline" to={'/Dashboard'}>
                         Dashboard
+                    </Link>
+                    <Link className="underline-offset-2 hover:underline" to={'/'} >
+                        Home
                     </Link>
                 </nav>
                 {!user && 

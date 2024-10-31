@@ -4,6 +4,7 @@ import { CreateChallengeDto } from './dto/CreateChallenge.dto';
 import { query } from 'express';
 import { ChallengeResultDto } from './dto/ChallengeResult.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { ChallengeCategory } from '@prisma/client';
 
 @Controller('challenge')
 export class ChallengeController {
@@ -16,6 +17,11 @@ export class ChallengeController {
         return this.challengeService.getChallenges(query)
     }
     
+    @Get('getChallengesForUser')
+    async getChallengesForUser(@Query() query: { search: string, category: ChallengeCategory} ) {
+        return this.challengeService.getChallengesForUser(query)
+    }
+
     @Get('getChallenge')
     async getChallenge(@Query('challengeId') challengeId: string) {
         return this.challengeService.getChallenge(challengeId)

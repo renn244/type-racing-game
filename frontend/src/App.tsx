@@ -9,6 +9,8 @@ import AdminChallenge from './Pages/adminDashboard/AdminChallenge'
 import AddChallenge from './Pages/adminDashboard/AddChallenge'
 import { GithubIcon, TwitterIcon, TwitchIcon, FacebookIcon, LinkedinIcon } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import UserDashboard from './Pages/UserDashboard'
+import Challenges from './Pages/Challenges'
 
 function App() {
   const { user, loading } = useAuthContext()
@@ -23,10 +25,12 @@ function App() {
       <NavBar />
       
       <Routes>
-        <Route path="/" element={user ? <Home /> : <Navigate to={'/login'} />} />
+        <Route path="/" element={<Home />} />
+        <Route path='/dashboard' element={user ? <UserDashboard /> : <Navigate to={'/login'} />} />
         <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
         <Route path="/register" element={user ? <Navigate to="/" /> : <Register />} />
         <Route path="/challenge" element={ <Challenge /> } />
+        <Route path='/challenges' element={ <Challenges />} />
         
         {/* should be a private route only available for admins */}
         <Route path='/adminChallenge' element={<AdminChallenge />} />

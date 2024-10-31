@@ -1,6 +1,7 @@
 import KeyboardTypeAnimation from "@/components/pageComponents/Home/KeyboardTypeAnimation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Link } from "react-router-dom"
 
 const Home = () => {
 
@@ -15,7 +16,11 @@ const Home = () => {
               <p className="text-xl text-muted-foreground mb-6">
                 Improve your typing skills with our interactive challenges and real-time feedback.
               </p>
-              <Button size="lg">Get Started</Button>
+              <Link to={'/dashboard'}>
+                <Button size="lg">
+                  Get Started
+                </Button>
+              </Link>
             </div>
             <KeyboardTypeAnimation />
           </div>

@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import axiosFetch from "@/lib/axiosFetch"
-import { Challenge, CreateChallengeForm, difficulty } from "@/types/Challenge.type"
+import { category, Challenge, CreateChallengeForm, difficulty } from "@/types/Challenge.type"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { useForm, SubmitHandler } from "react-hook-form"
@@ -26,7 +26,8 @@ const EditChallengeModal = ({
             title: challenge.title,
             description: challenge.description,
             challenge: challenge.challenge,
-            difficulty: challenge.difficulty
+            difficulty: challenge.difficulty,
+            category: challenge.category
         }
     })
 
@@ -70,7 +71,7 @@ const EditChallengeModal = ({
                     Edit
                 </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-[500px]">
 
                 <DialogHeader>
                     <DialogTitle>
@@ -82,7 +83,7 @@ const EditChallengeModal = ({
                 </DialogHeader>
                 {/* do later */}
                 <form
-                className="flex flex-col gap-3"
+                className="flex flex-col gap-3 max-w-[452px]"
                 onSubmit={handleSubmit(mutate as SubmitHandler<CreateChallengeForm>)}
                 >
                     <div>
@@ -119,30 +120,53 @@ const EditChallengeModal = ({
                         {errors.challenge && <span className="font-semibold text-red-700">{errors.challenge.message}</span>}
                     </div>
                     
-                    <div>
-                        <Select 
-                        defaultValue={getValues('difficulty')}
-                        onValueChange={value => {
-                            // we need to manually control and clear the error
-                            setValue('difficulty', (value as difficulty))    
-                            if (errors.difficulty) {
-                                clearErrors('difficulty')
-                            }
-                        }}>
-                            <SelectTrigger className={`w-[390px] ${errors.difficulty && 'focus:ring-red-700 ring-red-700'}`}>
-                                <SelectValue placeholder="Difficulty" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectItem value="EASY" >easy</SelectItem>
-                                    <SelectItem value="MEDIUM" >medium</SelectItem>
-                                    <SelectItem value="HARD" >hard</SelectItem>
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
-                        {errors.difficulty && <span className="font-semibold text-red-700">{errors.difficulty.message}</span>}
-                    </div>
+                    <div className='flex gap-3'>
+                            <div>
+                                <Select defaultValue={getValues('difficulty')} onValueChange={value => {
+                                    // we need to manually control and clear the error
+                                    setValue('difficulty', (value as difficulty))    
+                                    if (errors.difficulty) {
+                                        clearErrors('difficulty')
+                                    }
+                                }}>
+                                    <SelectTrigger className={`w-[220px] ${errors.difficulty && 'focus:ring-red-700 ring-red-700'}`}>
+                                        <SelectValue placeholder="Difficulty" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectItem value="Easy" >easy</SelectItem>
+                                            <SelectItem value="Medium" >medium</SelectItem>
+                                            <SelectItem value="Hard" >hard</SelectItem>
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                                {errors.difficulty && <span className="font-semibold text-red-700">{errors.difficulty.message}</span>}
+                            </div>
+                            
+                            <div>
+                                <Select defaultValue={getValues('category')} onValueChange={value => {
+                                    // we need to manually control and clear the error
+                                    setValue('category', (value as category))    
+                                    if (errors.category) {
+                                        clearErrors('category')
+                                    }
+                                }}>
+                                    <SelectTrigger className={`w-[220px] ${errors.difficulty && 'focus:ring-red-700 ring-red-700'}`}>
+                                        <SelectValue placeholder="Category" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectItem value="Featured" >Featured</SelectItem>
+                                            <SelectItem value="Daily" >Daily</SelectItem>
+                                            <SelectItem value="Practice" >Practice</SelectItem>
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                                {errors.category && <span className="font-semibold text-red-700">{errors.category.message}</span>}
+                            </div>
+                        </div>
                     <Button 
+
                     disabled={isPending}
                     type="submit" >
                         {isPending ? <LoadingSpinner /> : "Create"}
