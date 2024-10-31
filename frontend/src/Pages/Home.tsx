@@ -16,7 +16,7 @@ const Home = () => {
               <p className="text-xl text-muted-foreground mb-6">
                 Improve your typing skills with our interactive challenges and real-time feedback.
               </p>
-              <Link to={'/dashboard'}>
+              <Link to={'/challenges'}>
                 <Button size="lg">
                   Get Started
                 </Button>

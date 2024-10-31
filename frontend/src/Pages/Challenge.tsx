@@ -24,24 +24,20 @@ const Challenge = () => {
     const [time, setTime] = useState(0);
 
     const { calculateAccuracy, calculateWPM, handleKeyDown, 
-        getChallenge, SendChallengeResult, timetoStart, setTimetoStart } = useChallenge()
+        SendChallengeResult, timetoStart, setTimetoStart, 
+        isLoading, challengeData } = useChallenge()
 
-    const { data: challengeData, isLoading } = useQuery({
-        queryKey: ['challenge'],
-        queryFn: async () => getChallenge(searchParams.get('challengeId') || ''),
-        refetchOnWindowFocus: false
-    })
+    
 
     useEffect(() => {
 
         if (!challengeData?.challenge || finished || timetoStart !== 0) return;
-
         const timer = setInterval(() => { 
             setTime((prev) => prev + 1);
         }, 1000);
 
         const keyListener = (e: KeyboardEvent) => handleKeyDown(setTyped, setKeyUp, e)
-        window.document.addEventListener("keydown", keyListener);
+        window.document.addEventListener("keydown", keyListener);   
         
         return () => { 
             clearInterval(timer); 
@@ -199,7 +195,7 @@ const Challenge = () => {
                         </CardContent>
                     </Card>
 
-                    <VirtualKeyboard keyUp={keyUp} timetoStart={timetoStart} />
+                    <VirtualKeyboard   keyUp={keyUp} timetoStart={timetoStart} />
 
                     {/* Action Buttons */}
                     <div className="flex justify-center gap-4 mt-6">

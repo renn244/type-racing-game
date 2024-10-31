@@ -1,11 +1,14 @@
 import axiosFetch from "@/lib/axiosFetch"
 import { Challenge, ChallengeResultData } from "@/types/Challenge.type"
+import { useQuery } from "@tanstack/react-query"
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
+import { useSearchParams } from "react-router-dom"
 
 type Setter<T = any> = Dispatch<SetStateAction<T>>
 
 const useChallenge = () => {
     const [timetoStart, setTimetoStart] = useState<number>(3)
+    const [searchParams] = useSearchParams()
 
     const calculateWPM = (challenge: string, time: number) => {
         return Math.round((challenge.length / 5) / (time / 60))
@@ -41,7 +44,7 @@ const useChallenge = () => {
     const getChallenge = async (challengeId: string) => {
 
         const response = await axiosFetch.get(`/challenge/getChallenge?challengeId=${challengeId}`)
-
+        
         if (response.status === 404) {
             // handle erorr
             return window.location.assign('/error?message=cannot+find+page')
@@ -65,11 +68,17 @@ const useChallenge = () => {
         return response.data
     }
 
+    const { data: challengeData, isLoading } = useQuery({
+        queryKey: ['challenge'],
+        queryFn: async () => getChallenge(searchParams.get('challengeId') || ''),
+        refetchOnWindowFocus: false
+    })
+
     useEffect(() => {
-        if(timetoStart === 0) {
+        if(timetoStart === 0 || isLoading) {
             return
         }        
-        const timetoStartTimer = setInterval(() => {
+        const timetoStartTimer = setTimeout(() => {
             setTimetoStart(prev => {
                 if (prev === 0) {
                     return 0
@@ -80,12 +89,13 @@ const useChallenge = () => {
         }, 1000)
 
         return () => {
-            clearInterval(timetoStartTimer)
+            clearTimeout(timetoStartTimer)
         }
-    }, [timetoStart])    
+    }, [timetoStart, isLoading])    
 
     return {
-        calculateAccuracy, calculateWPM, handleKeyDown, getChallenge, SendChallengeResult, timetoStart, setTimetoStart
+        calculateAccuracy, calculateWPM, handleKeyDown, SendChallengeResult, timetoStart, setTimetoStart,
+        isLoading, challengeData
     }
 }
 

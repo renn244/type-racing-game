@@ -31,9 +31,7 @@ const NavBar = () => {
                     Type
                 </h2>
                 <nav className="flex space-x-6">
-                    <Link className="underline-offset-2 hover:underline" to={'#Features'} >
-                        Features
-                    </Link>
+
                     <Link className="underline-offset-2 hover:underline" to={'/challenges'}>
                         Challenges
                     </Link>

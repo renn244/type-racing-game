@@ -1,10 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ChallengeService } from './challenge.service';
 import { CreateChallengeDto } from './dto/CreateChallenge.dto';
-import { query } from 'express';
 import { ChallengeResultDto } from './dto/ChallengeResult.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ChallengeCategory } from '@prisma/client';
+import { JwtOptionalGuard } from 'src/guard/OptionalJwtGuard';
 
 @Controller('challenge')
 export class ChallengeController {
@@ -17,9 +17,10 @@ export class ChallengeController {
         return this.challengeService.getChallenges(query)
     }
     
+    @UseGuards(JwtOptionalGuard)
     @Get('getChallengesForUser')
-    async getChallengesForUser(@Query() query: { search: string, category: ChallengeCategory} ) {
-        return this.challengeService.getChallengesForUser(query)
+    async getChallengesForUser(@Query() query: { search: string, category: ChallengeCategory}, @Request() req: any) {
+        return this.challengeService.getChallengesForUser(query, req)
     }
 
     @Get('getChallenge')

@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateChallengeDto } from './dto/CreateChallenge.dto';
 import { ChallengeCategory, Prisma } from '@prisma/client';
 import { ChallengeResultDto } from './dto/ChallengeResult.dto';
+import { notContains } from 'class-validator';
 
 @Injectable()
 export class ChallengeService {
@@ -38,12 +39,25 @@ export class ChallengeService {
         return getDailychallenge
     }
 
-    async getChallengesForUser(query: {search: string, category: ChallengeCategory}) {
+    async getChallengesForUser(query: {search: string, category: ChallengeCategory}, req: any) {
+        const userId = req.user?.sub
         let catogoryQuery = {}
+        let userFilterComplete = {}
+
         if (query.category) {
             catogoryQuery = {
                 category: query.category
             }
+        }
+
+        if (userId) {
+            userFilterComplete = {
+                userCompleted: {
+                    none: {
+                        userId: userId
+                    }
+                } 
+            } 
         }
 
         const challenges = await this.prisma.challenge.findMany({
@@ -52,11 +66,12 @@ export class ChallengeService {
                     contains: query.search,
                     mode: 'insensitive',
                 },
+                ...userFilterComplete,
                 ...catogoryQuery
             },
+            
             take: 30
         })
-
         const organizedChallenges = {
             featured: [],
             daily: [],

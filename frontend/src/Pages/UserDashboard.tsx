@@ -68,7 +68,7 @@ const UserDashboard = () => {
                             <Clock className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{dashboardInfo?.Biometrics.TimePracticed} hrs</div>
+                            <div className="text-2xl font-bold">{dashboardInfo?.Biometrics.TimePracticed}</div>
                             <p className="text-xs text-muted-foreground">This month</p>
                         </CardContent>
                     </Card>
