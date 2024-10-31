@@ -70,11 +70,29 @@ export class ChallengeService {
         return challenge
     }
 
-    async createChallengeResut(body: ChallengeResultDto, req: any) {
+    async createChallengeResult(body: ChallengeResultDto, req: any) {
         try {
             const userId = req.user.sub
-            console.log(userId)
-            // should handle if he retry agai nbecause this will throw an error so make sure to delete it first
+
+            const findChallengeExist = await this.prisma.challengeCompleted.findUnique({
+                where: {
+                    challengeId_userId: {
+                        userId: userId,
+                        challengeId: body.challengeId
+                    }
+                }
+            })
+
+            if (findChallengeExist) {
+                const deleteChallenge = await this.prisma.challengeCompleted.delete({
+                    where: {
+                        challengeId_userId: {
+                            userId: userId,
+                            challengeId: body.challengeId
+                        }
+                    }
+                })
+            }
 
             const CreateChallengeResult = await this.prisma.challengeCompleted.create({
                 data: {
@@ -84,7 +102,6 @@ export class ChallengeService {
                     wpm: body.wpm,
                     accuracy: body.accuracy,
                     time: body.time,
-                    
                 }
             })
 
@@ -92,7 +109,6 @@ export class ChallengeService {
         } catch (error) {
             if(error instanceof Prisma.PrismaClientKnownRequestError) {
                 if(error.code === 'P2002') {
-                    // i don't know if this will be used kase i hahandle din naman kung nag eexist na
                     if (error.meta.target[0]) {
                         throw new GoneException({
                             name: error.meta.target[0],
@@ -100,7 +116,6 @@ export class ChallengeService {
                         })
                     }
                 }
-                console.log(error)
                 throw new GoneException('unknown error in the database')
             } else {
                 throw new InternalServerErrorException('internal server error')

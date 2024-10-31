@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Difficulty, Prisma } from '@prisma/client';
 import { contains } from 'class-validator';
 import { GoneException, NotFoundException } from '@nestjs/common';
+import { ChallengeResultDto } from './dto/ChallengeResult.dto';
 
 describe('ChallengeService', () => {
   let service: ChallengeService;
@@ -27,6 +28,11 @@ describe('ChallengeService', () => {
             },
             userinfo: {
               findMany: jest.fn(),
+            },
+            challengeCompleted: {
+              create: jest.fn(),
+              findUnique: jest.fn(),
+              delete: jest.fn()
             }
           }
         }
@@ -124,6 +130,62 @@ describe('ChallengeService', () => {
     })
   })
 
+  describe('creatChallenge Result', () => {
+    const req = { user: { sub: 'hdasine' } }
+    const mockChallengeResultData: ChallengeResultDto = {
+      challengeId: 'test3',
+      typed: 'hello world',
+      accuracy: 100,
+      wpm: 47,
+      time: 60
+    } 
+    
+    it('should create a challenge Result', async () => {
+      const challengeResultResponse = {
+        ...mockChallengeResultData,
+        userId: req.user.sub,
+        id: 'sdadkniuwq',
+        dateCompleted: new Date()
+      }
+
+      jest.spyOn(prisma.challengeCompleted, 'findUnique').mockResolvedValue(undefined)
+      jest.spyOn(prisma.challengeCompleted, 'create').mockResolvedValue(challengeResultResponse)
+
+      const result = await service.createChallengeResult(mockChallengeResultData, req)
+      expect(result).toEqual(challengeResultResponse)
+      expect(prisma.challengeCompleted.delete).not.toHaveBeenCalled()
+      expect(prisma.challengeCompleted.create).toHaveBeenCalledWith({
+        data: {
+          ...mockChallengeResultData,
+          userId: req.user.sub
+      }})
+    })
+
+    it('should delete the previous data and create another one', async () => {
+      const newlyCreatedResult = {
+        ...mockChallengeResultData,
+        userId: req.user.sub,
+        id: 'this is the new one',
+        dateCompleted: new Date()
+      }
+      const challengeResultResponse = {
+        ...mockChallengeResultData,
+        userId: req.user.sub,
+        id: 'sdadkniuwq',
+        dateCompleted: new Date()
+      }
+
+      jest.spyOn(prisma.challengeCompleted, 'findUnique').mockResolvedValue(challengeResultResponse)
+      jest.spyOn(prisma.challengeCompleted, 'delete').mockResolvedValue(challengeResultResponse)
+      jest.spyOn(prisma.challengeCompleted, 'create').mockResolvedValue(newlyCreatedResult)
+
+      const result = await service.createChallengeResult(mockChallengeResultData, req)
+
+      expect(result).toEqual(newlyCreatedResult)
+      expect(prisma.challengeCompleted.delete).toHaveBeenCalled() // making sure that dlete is called
+    })
+  })
+
   describe('createChallenge', () => {
     const mockExpectedChallenge = { id: '2', title: 'Challenge 1', description: 'Description 1', challenge: 'Solve problem 1', difficulty: 'EASY' as Difficulty,
       userComplete: [], createdAt: new Date(), updatedAt: new Date() };
@@ -169,6 +231,8 @@ describe('ChallengeService', () => {
       }));
     })
   })
+
+
 
   describe('patchChallenge', () => {
     const mockChallenge = { title: 'Challenge 1', description: 'Description 1', challenge: 'Solve problem 1', difficulty: 'EASY' as Difficulty };

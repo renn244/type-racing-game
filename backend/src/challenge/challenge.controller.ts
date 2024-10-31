@@ -24,7 +24,7 @@ export class ChallengeController {
     @UseGuards(JwtAuthGuard)
     @Post('challengeResult')
     async createChallengeResult(@Body() body: ChallengeResultDto, @Request() req: any) {
-        return this.challengeService.createChallengeResut(body, req)
+        return this.challengeService.createChallengeResult(body, req)
     }
 
     @Post('createChallenge') 
