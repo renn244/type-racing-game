@@ -13,22 +13,28 @@ import LoadingSpinner from "@/components/common/LoadingSpinner"
 import ChangePasswordModal from "../ChangePasswordModal"
 
 type AccountTabProps = {
-    profile?: string | File,
+    initialProfile?: string | File,
+    initialUsername: string,
+    initialEmail: string,
+}
+
+type AccountForm = {
+    profile: string | File,
     username: string,
-    email: string,
+    email: string
 }
 
 const AccountTab = ({
-    profile,
-    username,
-    email,
+    initialProfile,
+    initialUsername,
+    initialEmail,
 }: AccountTabProps) => {
     const [file, setFile] = useState<File | undefined>(undefined)
     const [previewFile, setPreviewFile] = useState<any>('')
-    const [userInfo, setUserInfo] = useState<AccountTabProps>({
-        profile: profile || '',
-        username: username,
-        email: email
+    const [userInfo, setUserInfo] = useState<AccountForm>({
+        profile: initialProfile || '',
+        username: initialUsername,
+        email: initialEmail
     })
 
     const changeEvent = (e: React.ChangeEvent<HTMLInputElement>) => {

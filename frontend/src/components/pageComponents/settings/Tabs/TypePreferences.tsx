@@ -10,13 +10,23 @@ import { Switch } from "@/components/ui/switch"
 import { useMutation } from "@tanstack/react-query"
 import axiosFetch from "@/lib/axiosFetch"
 import LoadingSpinner from "@/components/common/LoadingSpinner"
+import { FolderOpenDot } from "lucide-react"
 
-type keyboardLayout = 'qwerty' | 'azerty' | 'dvorak'
+type keyboardLayout = 'qwerty' | 'azerty' | 'dvorak';
+type TypePreferencesTabProps = {
+    initialSoundEffects: boolean,
+    initialFontSize: number,
+    initialKeyboardLayout: keyboardLayout
+}
 
-const TypePreferencesTab = () => {
-    const [soundEffect, setSoundEffect] = useState<boolean>(true)
-    const [fontSize, setFontSize] = useState<number>(16)
-    const [keyboardLayout, setKeyboardLayout] = useState<keyboardLayout>('qwerty')
+const TypePreferencesTab = ({
+    initialSoundEffects,
+    initialFontSize,
+    initialKeyboardLayout
+}: TypePreferencesTabProps) => {
+    const [soundEffect, setSoundEffect] = useState<boolean>(initialSoundEffects)
+    const [fontSize, setFontSize] = useState<number>(initialFontSize)
+    const [keyboardLayout, setKeyboardLayout] = useState<keyboardLayout>(initialKeyboardLayout)
 
     const { mutate: saveChanges, isPending } = useMutation({
         mutationKey: ['updateTypePreferences'],
@@ -72,7 +82,7 @@ const TypePreferencesTab = () => {
                 </CardContent>
                 <CardFooter>
                     <Button onClick={() => saveChanges()}  >
-                        {isPending ? <LoadingSpinner /> : "Save Changes"}
+                        {isPending ? <LoadingSpinner /> : "Save Preferences"}
                     </Button>
                 </CardFooter>
             </Card>

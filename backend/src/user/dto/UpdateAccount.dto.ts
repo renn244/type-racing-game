@@ -38,3 +38,12 @@ class TypePreferences {
 }
 
 export class UpdateTypePreferences extends PartialType(TypePreferences) {}
+
+export class UpdateNotification {
+
+}
+
+export class UpdatePrivacy {
+    privateProfile: boolean;
+    showStats: boolean;
+}

@@ -1,6 +1,7 @@
-
 import LoadingSpinner from "@/components/common/LoadingSpinner"
 import AccountTab from "@/components/pageComponents/settings/Tabs/AccountTab"
+import NotificationTab from "@/components/pageComponents/settings/Tabs/NotificationTab"
+import PrivacyTab from "@/components/pageComponents/settings/Tabs/PrivacyTab"
 import TypePreferencesTab from "@/components/pageComponents/settings/Tabs/TypePreferences"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import axiosFetch from "@/lib/axiosFetch"
@@ -63,10 +64,20 @@ const Settings = () => {
                                 <TabsTrigger value="privacy" >Privacy & Security</TabsTrigger>
                             </TabsList>
 
-                            <AccountTab profile={data.profile} username={data.username} email={data.email} />
+                            <AccountTab initialProfile={data.profile} initialUsername={data.username} initialEmail={data.email} />
 
-                            <TypePreferencesTab />
+                            <TypePreferencesTab 
+                            initialFontSize={data.preferences.fontSize} 
+                            initialSoundEffects={data.preferences.soundEffects}  
+                            initialKeyboardLayout={data.preferences.keyboardLayout}
+                            />
 
+                            <NotificationTab />
+
+                            <PrivacyTab 
+                            initialPrivateprofile={data.preferences.privateProfile}
+                            initialShowstats={data.preferences.showStats}
+                            />
                         </Tabs>
                     ) 
                 }

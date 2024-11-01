@@ -2,7 +2,8 @@ import { GoneException, Injectable, NotFoundException } from '@nestjs/common';
 import { ChallengeService } from 'src/challenge/challenge.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt'
-import { UpdateAccount, UpdatePassword, UpdateTypePreferences } from './dto/UpdateAccount.dto';
+import { UpdateAccount, UpdatePassword, UpdatePrivacy, UpdateTypePreferences } from './dto/UpdateAccount.dto';
+import { provideSecret } from '../util/ProvideSecret';
 
 @Injectable()
 export class UserService {
@@ -63,6 +64,7 @@ export class UserService {
                 username: true,
                 profile: true,
                 userinfo: true,
+                preferences: true
             }
         })
         
@@ -169,4 +171,37 @@ export class UserService {
 
         return updateTypePreferences
     }
+
+    async updatePrivacySettings(body: UpdatePrivacy, req: any) {
+        const userId = req.user.sub;
+
+        const updatePrivacy = await this.prisma.userPreferences.update({
+            where: {
+                userId: userId
+            },
+            data: {
+                ...body
+            }
+        })
+
+        return updatePrivacy
+    }
+
+    // async update2FA(body: any, req: any) {
+    //     const userId = req.user.sub;
+
+    //     const secret = provideSecret()
+
+    //     const update2FA = await this.prisma.user.update({
+    //         where: {
+    //             id: userId
+    //         },
+    //         data: {
+    //             multiFA: body.twoFactorAuth,
+    //             multiFASecret: provideSecret,
+    //         }
+    //     })
+
+    //     return update2FA
+    // }
 }

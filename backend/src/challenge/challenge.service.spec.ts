@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ChallengeService } from './challenge.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ChallengeCategory, Difficulty, Prisma } from '@prisma/client';
-import { contains } from 'class-validator';
 import { GoneException, NotFoundException } from '@nestjs/common';
 import { ChallengeResultDto } from './dto/ChallengeResult.dto';
 
@@ -30,6 +29,7 @@ describe('ChallengeService', () => {
               findMany: jest.fn(),
             },
             challengeCompleted: {
+              findMany: jest.fn(),
               create: jest.fn(),
               findUnique: jest.fn(),
               delete: jest.fn()
@@ -148,6 +148,7 @@ describe('ChallengeService', () => {
         dateCompleted: new Date()
       }
 
+      jest.spyOn(service, 'UpdateUserBiometrics').mockReturnValue(undefined)
       jest.spyOn(prisma.challengeCompleted, 'findUnique').mockResolvedValue(undefined)
       jest.spyOn(prisma.challengeCompleted, 'create').mockResolvedValue(challengeResultResponse)
 
@@ -175,6 +176,7 @@ describe('ChallengeService', () => {
         dateCompleted: new Date()
       }
 
+      jest.spyOn(service, 'UpdateUserBiometrics').mockReturnValue(undefined)
       jest.spyOn(prisma.challengeCompleted, 'findUnique').mockResolvedValue(challengeResultResponse)
       jest.spyOn(prisma.challengeCompleted, 'delete').mockResolvedValue(challengeResultResponse)
       jest.spyOn(prisma.challengeCompleted, 'create').mockResolvedValue(newlyCreatedResult)
@@ -239,6 +241,7 @@ describe('ChallengeService', () => {
     const mockExpectedChallenge = { id: '2', title: 'Challenge 1', description: 'Description 1', challenge: 'Solve problem 1', difficulty: 'EASY' as Difficulty,  category: 'Daily' as ChallengeCategory,
       userComplete: [], createdAt: new Date(), updatedAt: new Date() };
 
+      
     it('should update a challenge and return the updated challenge', async () => {
       jest.spyOn(prisma.challenge, 'update').mockResolvedValue(mockExpectedChallenge);
 

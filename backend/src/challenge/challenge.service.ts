@@ -3,7 +3,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateChallengeDto } from './dto/CreateChallenge.dto';
 import { ChallengeCategory, Prisma } from '@prisma/client';
 import { ChallengeResultDto } from './dto/ChallengeResult.dto';
-import { notContains } from 'class-validator';
 
 @Injectable()
 export class ChallengeService {
@@ -312,7 +311,7 @@ export class ChallengeService {
             }
         })
 
-        let NumberofCompletedChallenges = getAllChallengesCompleted.length
+        let NumberofCompletedChallenges = getAllChallengesCompleted?.length || 0
         let accuracy = 0
         let wpm = 0
         let timePracticed = 0

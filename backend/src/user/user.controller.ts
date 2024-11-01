@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Patch, Post, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { UpdateAccount, UpdatePassword, UpdateTypePreferences } from './dto/UpdateAccount.dto';
+import { UpdateAccount, UpdatePassword, UpdatePrivacy, UpdateTypePreferences } from './dto/UpdateAccount.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerStrorage } from 'src/util/MulterStorage';
 
@@ -38,5 +38,10 @@ export class UserController {
     @Post('updateTypePreferences')
     async updateTypePreferences(@Body() body: UpdateTypePreferences, @Request() req: any) {
         return this.userService.updateTypePreferences(body, req)
+    }
+
+    @Post('updatePrivacySettings')
+    async updatePrivacySettings(@Body() body: UpdatePrivacy, @Request() req: any) {
+        return this.userService.updatePrivacySettings(body, req)
     }
 }
