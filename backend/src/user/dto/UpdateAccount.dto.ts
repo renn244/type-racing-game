@@ -1,4 +1,5 @@
-import { IsString, Max, MaxLength, MinLength } from "class-validator";
+import { PartialType } from "@nestjs/mapped-types";
+import { IsBoolean, IsNumber, IsString, MaxLength, MinLength } from "class-validator";
 
 export class UpdateAccount {
     @IsString()
@@ -24,3 +25,16 @@ export class UpdatePassword {
     @IsString()
     confirmPassword: string;
 }
+
+class TypePreferences {
+    @IsBoolean()
+    soundEffects: boolean;
+    
+    @IsNumber()
+    fontSize: number;
+    
+    @IsString()
+    keyboardLayout: string;
+}
+
+export class UpdateTypePreferences extends PartialType(TypePreferences) {}

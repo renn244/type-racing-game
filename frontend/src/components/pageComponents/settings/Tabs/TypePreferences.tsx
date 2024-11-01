@@ -2,11 +2,14 @@
 import { TabsContent } from "@/components/ui/tabs"
 import { CardHeader, CardContent, CardFooter, Card, CardTitle, CardDescription } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import ThemeSwitch from "@/components/common/ThemeSwitch"
 import { Select, SelectTrigger, SelectItem, SelectValue, SelectContent } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
+import { Switch } from "@/components/ui/switch"
+import { useMutation } from "@tanstack/react-query"
+import axiosFetch from "@/lib/axiosFetch"
+import LoadingSpinner from "@/components/common/LoadingSpinner"
 
 type keyboardLayout = 'qwerty' | 'azerty' | 'dvorak'
 
@@ -14,6 +17,19 @@ const TypePreferencesTab = () => {
     const [soundEffect, setSoundEffect] = useState<boolean>(true)
     const [fontSize, setFontSize] = useState<number>(16)
     const [keyboardLayout, setKeyboardLayout] = useState<keyboardLayout>('qwerty')
+
+    const { mutate: saveChanges, isPending } = useMutation({
+        mutationKey: ['updateTypePreferences'],
+        onMutate: async () => {
+            const response = await axiosFetch.post('/user/updateTypePreferences', {
+                soundEffects: soundEffect,
+                fontSize: fontSize,
+                keyboardLayout: keyboardLayout
+            })
+
+            return response.data
+        }
+    })
 
     return (
         <TabsContent value="preferences">
@@ -27,7 +43,7 @@ const TypePreferencesTab = () => {
                 <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
                         <Label htmlFor="sound-effects">Sound Effects</Label>
-                        <ThemeSwitch />
+                        <Switch checked={soundEffect} onCheckedChange={setSoundEffect} id="sound-effects" />
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="keyboard-layout">Keyboard Layout</Label>
@@ -55,8 +71,8 @@ const TypePreferencesTab = () => {
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <Button>
-                        Save Changes
+                    <Button onClick={() => saveChanges()}  >
+                        {isPending ? <LoadingSpinner /> : "Save Changes"}
                     </Button>
                 </CardFooter>
             </Card>

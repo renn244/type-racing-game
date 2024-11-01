@@ -43,6 +43,12 @@ export class AuthService {
                 }
             })
     
+            const userTypePreferences = await this.prisma.userPreferences.create({
+                data: {
+                    userId: user.id,
+                }
+            })
+
             return user;
         } catch (error) {
             if (error instanceof Prisma.PrismaClientKnownRequestError) {

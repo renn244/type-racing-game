@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Patch, Post, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { UpdateAccount } from './dto/UpdateAccount.dto';
+import { UpdateAccount, UpdatePassword, UpdateTypePreferences } from './dto/UpdateAccount.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerStrorage } from 'src/util/MulterStorage';
 
@@ -28,5 +28,15 @@ export class UserController {
     }))
     async updateAccount(@Body() body: UpdateAccount, @UploadedFile() file: Express.Multer.File , @Request() req: any) {
         return this.userService.updateAccount(body, file, req)
+    }
+
+    @Post('updatePassword')
+    async updatePassword(@Body() body: UpdatePassword, @Request() req: any) {
+        return this.userService.updatePassword(body, req)
+    }
+
+    @Post('updateTypePreferences')
+    async updateTypePreferences(@Body() body: UpdateTypePreferences, @Request() req: any) {
+        return this.userService.updateTypePreferences(body, req)
     }
 }

@@ -10,6 +10,7 @@ import { useMutation } from "@tanstack/react-query"
 import axiosFetch from "@/lib/axiosFetch"
 import toFormData from "@/lib/toFomData.util"
 import LoadingSpinner from "@/components/common/LoadingSpinner"
+import ChangePasswordModal from "../ChangePasswordModal"
 
 type AccountTabProps = {
     profile?: string | File,
@@ -99,11 +100,8 @@ const AccountTab = ({
                             type="password"
                             value={'*************'} 
                             id="PasswordInput" />
-                            
-                            <Button type="button" variant={'outline'} className="rounded-lg">
-                                {/* make this a model later on */}
-                                Change Password
-                            </Button>
+
+                            <ChangePasswordModal />                            
                         </div>
                         
                     </CardContent>

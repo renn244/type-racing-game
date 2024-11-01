@@ -27,6 +27,7 @@ model User {
 
   role      ROLE?     @default(USER)
   userinfo  Userinfo?
+  preferences UserPreferences?
 
   Biometrics UserBiometric?
   completedChallenges ChallengeCompleted[]
@@ -43,6 +44,18 @@ model Userinfo {
   // Achievments String? // should be list of achievements later
 
   user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserPreferences {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+
+  theme             String   @default("light")
+  fontSize          Int   @default(16)
+  soundEffects      Boolean @default(true)
+  keyboardLayout    String   @default("qwerty")
+
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserBiometric {

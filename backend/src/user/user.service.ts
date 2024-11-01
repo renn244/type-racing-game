@@ -2,7 +2,7 @@ import { GoneException, Injectable, NotFoundException } from '@nestjs/common';
 import { ChallengeService } from 'src/challenge/challenge.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt'
-import { UpdateAccount, UpdatePassword } from './dto/UpdateAccount.dto';
+import { UpdateAccount, UpdatePassword, UpdateTypePreferences } from './dto/UpdateAccount.dto';
 
 @Injectable()
 export class UserService {
@@ -136,7 +136,7 @@ export class UserService {
 
         if(!verifyPassoword) {
             throw new GoneException({
-                name: 'Password',
+                name: 'password',
                 message: 'wrong password'
             })
         }
@@ -153,5 +153,20 @@ export class UserService {
         })
 
         return updateUserPassword
+    }
+
+    async updateTypePreferences(body: UpdateTypePreferences, req: any) {
+        const userId = req.user.sub;
+
+        const updateTypePreferences = await this.prisma.userPreferences.update({
+            where: {
+                userId: userId
+            },
+            data: {
+                ...body,
+            }
+        })
+
+        return updateTypePreferences
     }
 }
