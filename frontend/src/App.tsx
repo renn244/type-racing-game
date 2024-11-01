@@ -11,6 +11,7 @@ import { GithubIcon, TwitterIcon, TwitchIcon, FacebookIcon, LinkedinIcon } from 
 import { Link } from 'react-router-dom'
 import UserDashboard from './Pages/UserDashboard'
 import Challenges from './Pages/Challenges'
+import Settings from './Pages/Settings'
 
 function App() {
   const { user, loading } = useAuthContext()
@@ -27,6 +28,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path='/dashboard' element={user ? <UserDashboard /> : <Navigate to={'/login'} />} />
+        <Route path="/settings" element={user ? <Settings /> : <Navigate to={'/login'} /> } />
         <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
         <Route path="/register" element={user ? <Navigate to="/" /> : <Register />} />
         <Route path="/challenge" element={ <Challenge /> } />

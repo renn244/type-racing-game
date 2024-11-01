@@ -1,7 +1,16 @@
 import { useThemeContext } from "@/Context/ThemeContext"
+import { cn } from "@/lib/utils"
 import { Moon, Sun, SunMoon } from "lucide-react"
+import { ComponentProps } from "react"
 
-const ThemeSwitch = () => {
+type ThemeSwitchProps = {
+    className?: string,
+} & ComponentProps<'div'>
+
+const ThemeSwitch = ({
+    className,
+    ...props
+}: ThemeSwitchProps) => {
     const { theme, setTheme }= useThemeContext()
     
     const switchTheme = () => {
@@ -21,7 +30,9 @@ const ThemeSwitch = () => {
     }
 
     return (
-        <div title="theme" className="flex justify-start gap-3">
+        <div 
+        {...props}
+        title="theme" className={cn("flex justify-start gap-3", className)}>
             <SunMoon />
             <label 
             className="bg-border"

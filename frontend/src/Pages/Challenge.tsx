@@ -4,7 +4,6 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Clock, Target, Trophy, Users } from "lucide-react"
 import { useEffect, useState } from "react"
 import useChallenge from "@/hooks/Challenge.hook"
-import { useQuery } from "@tanstack/react-query"
 import { useSearchParams } from "react-router-dom"
 import LoadingSpinner from "@/components/common/LoadingSpinner"
 import VirtualKeyboard from "@/components/pageComponents/Challenge/VirtualKeyboard"
@@ -27,10 +26,8 @@ const Challenge = () => {
         SendChallengeResult, timetoStart, setTimetoStart, 
         isLoading, challengeData } = useChallenge()
 
-    
-
     useEffect(() => {
-
+        // the time and for listening to the keyboard 
         if (!challengeData?.challenge || finished || timetoStart !== 0) return;
         const timer = setInterval(() => { 
             setTime((prev) => prev + 1);

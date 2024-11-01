@@ -132,7 +132,7 @@ const UserDashboard = () => {
                                 <Card>
                                     <CardHeader>
                                         <CardTitle>
-                                            Upcoming Challenges
+                                            New Challenges
                                         </CardTitle>
                                         <CardDescription>
                                             Challenges available for you to attempt
