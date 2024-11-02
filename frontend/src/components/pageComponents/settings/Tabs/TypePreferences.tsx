@@ -10,13 +10,12 @@ import { Switch } from "@/components/ui/switch"
 import { useMutation } from "@tanstack/react-query"
 import axiosFetch from "@/lib/axiosFetch"
 import LoadingSpinner from "@/components/common/LoadingSpinner"
-import { FolderOpenDot } from "lucide-react"
+import { KeyboardLayout } from "@/types/User.type"
 
-type keyboardLayout = 'qwerty' | 'azerty' | 'dvorak';
 type TypePreferencesTabProps = {
     initialSoundEffects: boolean,
     initialFontSize: number,
-    initialKeyboardLayout: keyboardLayout
+    initialKeyboardLayout: KeyboardLayout
 }
 
 const TypePreferencesTab = ({
@@ -26,7 +25,7 @@ const TypePreferencesTab = ({
 }: TypePreferencesTabProps) => {
     const [soundEffect, setSoundEffect] = useState<boolean>(initialSoundEffects)
     const [fontSize, setFontSize] = useState<number>(initialFontSize)
-    const [keyboardLayout, setKeyboardLayout] = useState<keyboardLayout>(initialKeyboardLayout)
+    const [keyboardLayout, setKeyboardLayout] = useState<KeyboardLayout>(initialKeyboardLayout)
 
     const { mutate: saveChanges, isPending } = useMutation({
         mutationKey: ['updateTypePreferences'],
@@ -57,7 +56,7 @@ const TypePreferencesTab = ({
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="keyboard-layout">Keyboard Layout</Label>
-                        <Select value={keyboardLayout} onValueChange={value => setKeyboardLayout(value as keyboardLayout)} >
+                        <Select value={keyboardLayout} onValueChange={value => setKeyboardLayout(value as KeyboardLayout)} >
                             <SelectTrigger id="keyboar-layout">
                                 <SelectValue placeholder="Select a keyboard layout" />
                             </SelectTrigger>

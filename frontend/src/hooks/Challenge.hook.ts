@@ -77,7 +77,7 @@ const useChallenge = () => {
     useEffect(() => {
         if(timetoStart === 0 || isLoading) {
             return
-        }        
+        }     
         const timetoStartTimer = setTimeout(() => {
             setTimetoStart(prev => {
                 if (prev === 0) {

@@ -14,7 +14,7 @@ const UserDashboard = () => {
         queryFn: async () => {
             const response = await axiosFetch.get('/user/getDashboardInfo')
             console.log(response.data)
-            return response.data
+            return response.data 
         }
     })
 

@@ -1,14 +1,8 @@
 import { createContext, useContext } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axiosFetch from '@/lib/axiosFetch';
-
-type User = {
-    id: string,
-    username: string,
-    email?: string,
-    profile?: string,
-    userinfo: any
-}
+import { StoragesetItem } from '@/lib/LocalStorage';
+import { User } from '@/types/User.type';
 
 type AuthContextState = {
     user: User | undefined,
@@ -41,6 +35,10 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             })
             
             if (!response) return 
+
+            if (response.data.preferences) {
+                StoragesetItem('preference', JSON.stringify(response.data.preferences))
+            }
 
             return response.data as User
         },

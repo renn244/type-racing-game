@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Clock, Trophy, Zap, Star, Code, BookOpen } from 'lucide-react'
+import { Clock, Trophy, Star, Code, BookOpen } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import axiosFetch from '@/lib/axiosFetch'
 import {  Challenge, ChallengesForUser } from '@/types/Challenge.type'

@@ -5,6 +5,7 @@ import PrivacyTab from "@/components/pageComponents/settings/Tabs/PrivacyTab"
 import TypePreferencesTab from "@/components/pageComponents/settings/Tabs/TypePreferences"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import axiosFetch from "@/lib/axiosFetch"
+import { UserSettings } from "@/types/User.type"
 import { useQuery } from "@tanstack/react-query"
 import toast from "react-hot-toast"
 
@@ -26,24 +27,26 @@ const Settings = () => {
                 return
             }
 
-            return response.data
+            return response.data as UserSettings
         },
         refetchOnWindowFocus: false,
         retry: 1
     }) 
 
     if (!data) {
-        <div className="min-h-[750px] bg-background">
-            <div className="container mx-auto px-3 py-6">
-            
-                <h1 className="text-3xl font-bold mb-6">User Settings</h1>
+        return (
+            <div className="min-h-[750px] bg-background">
+                <div className="container mx-auto px-3 py-6">
+                
+                    <h1 className="text-3xl font-bold mb-6">User Settings</h1>
 
-                <div className="bg-white p-4 rounded-lg">
-                    <p className="text-red-500">An error occurred try again</p>
+                    <div className="bg-white p-4 rounded-lg">
+                        <p className="text-red-500">An error occurred try again</p>
+                    </div>
+
                 </div>
-
             </div>
-       </div>
+        )
     }
 
     return (

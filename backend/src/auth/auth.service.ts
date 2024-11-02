@@ -141,7 +141,8 @@ export class AuthService {
                     username: true,
                     profile: true,
                     email: true,
-                    userinfo: true
+                    userinfo: true,
+                    preferences: true
                 },
             })
 
