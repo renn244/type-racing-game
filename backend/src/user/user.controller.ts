@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Query, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UpdateAccount, UpdatePassword, UpdatePrivacy, UpdateTypePreferences } from './dto/UpdateAccount.dto';
@@ -12,6 +12,11 @@ export class UserController {
         private readonly userService: UserService
     ) {}
 
+    @Get('getProfile')
+    async getProfile(@Query('userId') userId: string) {
+        return this.userService.getProfile(userId)
+    }
+
     @Get('getDashboardInfo')
     async getDashboardInfo(@Request() req: any) {
         return this.userService.getDashboardInformation(req)
@@ -24,7 +29,7 @@ export class UserController {
 
     @Post('updateAccount')
     @UseInterceptors(FileInterceptor('profile', {
-        storage: multerStrorage()
+        storage: multerStrorage('Uploads/avatar')
     }))
     async updateAccount(@Body() body: UpdateAccount, @UploadedFile() file: Express.Multer.File , @Request() req: any) {
         return this.userService.updateAccount(body, file, req)

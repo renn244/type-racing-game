@@ -1,10 +1,11 @@
 import { GoneException, Injectable, NotFoundException } from '@nestjs/common';
-import { ChallengeService } from 'src/challenge/challenge.service';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { ChallengeService } from '../challenge/challenge.service';
+import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt'
 import { UpdateAccount, UpdatePassword, UpdatePrivacy, UpdateTypePreferences } from './dto/UpdateAccount.dto';
 import { provideSecret } from '../util/ProvideSecret';
-
+import * as fs from 'fs'
+import * as path from 'path'
 @Injectable()
 export class UserService {
     constructor(
@@ -13,7 +14,54 @@ export class UserService {
     ) {}
 
     async getProfile(userId: string) {
+        let includeQuery = {}
+        const privatePreferences = await this.prisma.userPreferences.findFirst({
+            where: {
+                userId: userId
+            },
+            select: {
+                privateProfile: true,
+                showStats: true
+            }
+        })
+        
+        if(!privatePreferences) {
+            throw new NotFoundException({
+                name: 'user',
+                message: 'user is not found'
+            })
+        }
 
+        if(!privatePreferences.privateProfile) {
+            includeQuery = {
+                ...includeQuery,
+                email: true,
+                userinfo: true,
+                completedChallenges: true,
+            }
+
+        }
+
+        if(privatePreferences.showStats) {
+            includeQuery = {
+                ...includeQuery,
+                Biometrics: true
+            }
+        }
+
+        const ProfileInfo = await this.prisma.user.findUnique({
+            where: {
+                id: userId
+            },
+            select: {
+                id: true,
+                username: true,
+                profile: true,
+                ...includeQuery
+            }
+        })
+
+        return ProfileInfo
     }
 
     async getDashboardInformation(req: any) {
@@ -79,9 +127,37 @@ export class UserService {
         return userInformation
     }
 
+    // fileLink should look like "http://localhost:5000/Uploads/e6c42da0152639392c0a_https___-28e83b26770f.jpg"
+    async DeleteProfileFile(fileLink: string) {
+        const fileName = fileLink.split('/')
+        const completePath = path.join(__dirname, '../..', 'Uploads', 'avatar', fileName[fileName.length - 1])
+
+        fs.unlink(completePath, (err) => {
+            if (err) {
+                // handleError
+                return 'failed to delete'
+            }
+        })
+
+        return fileName[fileName.length - 1] + " got deleted"
+    }
+
     async uploadProfile(profile: Express.Multer.File, userId: string) {
         
         const pathFile = process.env.BASE_BACKEND_URL + "/" +  profile.path.split('\\').join('/')
+
+        const doesProfileExist = await this.prisma.user.findFirst({
+            where: {
+                id: userId
+            }, 
+            select: {
+                profile: true
+            }
+        })
+
+        if(doesProfileExist) {
+            this.DeleteProfileFile(doesProfileExist.profile)
+        }
 
         const updateProfile = await this.prisma.user.update({
             where: {
@@ -89,6 +165,9 @@ export class UserService {
             },
             data: {
                 profile: pathFile
+            },
+            select: {
+                profile: true
             }
         })
 
@@ -109,6 +188,10 @@ export class UserService {
             data: {
                 username: body.username,
                 email: body.email
+            },
+            select: {
+                username: true,
+                email: true
             }
         })
 
@@ -119,7 +202,7 @@ export class UserService {
         const userId = req.user.sub;
 
         if(body.newPassword !== body.confirmPassword) {
-            return new GoneException({
+            throw new GoneException({
                 name: 'confirmPassword',
                 message: 'confirmPassword does not match'
             })
@@ -134,9 +217,9 @@ export class UserService {
             }
         })
 
-        const verifyPassoword = await bcrypt.compare(body.password, getPassword.password)
+        const verifyPassword = await bcrypt.compare(body.password, getPassword.password)
 
-        if(!verifyPassoword) {
+        if(!verifyPassword) {
             throw new GoneException({
                 name: 'password',
                 message: 'wrong password'
