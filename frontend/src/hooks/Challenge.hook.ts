@@ -27,18 +27,19 @@ const useChallenge = () => {
     } 
 
     const handleKeyDown = async (setTyped: Setter<string>, setKeyUp: Setter<string>, e: KeyboardEvent) => {
-        if (/^[a-zA-Z0-9'.-:?,]$/.test(e.key) && !e.repeat) { // check if it's a letter and not a repeat
+        // Check if the key is a printable character (excluding function keys and system keys)
+        if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey && !e.repeat) {
             setTyped(prev => prev + e.key);
-            setKeyUp(e.key)
+            setKeyUp(e.key);
         } else if (e.key === "Backspace") {
-            setTyped(prev => prev.slice(0, -1))
-            setKeyUp(e.key)
+            setTyped(prev => prev.slice(0, -1));
+            setKeyUp(e.key);
         } else if (e.key === " ") {
-            setTyped(prev => prev + " ")
-            setKeyUp(e.key)
+            setTyped(prev => prev + " ");
+            setKeyUp(e.key);
         } 
-        await new Promise(resolve => setTimeout(resolve, 130))
-        setKeyUp('')
+        await new Promise(resolve => setTimeout(resolve, 130));
+        setKeyUp('');
     }
 
     const getChallenge = async (challengeId: string) => {

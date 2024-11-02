@@ -23,8 +23,7 @@ const Challenge = () => {
     const [time, setTime] = useState(0);
     const [typed, setTyped] = useState<string>("")
 
-    const {handleKeyDown, timetoStart, setTimetoStart, 
-        isLoading, challengeData } = useChallenge()
+    const {handleKeyDown, timetoStart, setTimetoStart, isLoading, challengeData } = useChallenge()
 
     useEffect(() => {
         // the time and for listening to the keyboard 
