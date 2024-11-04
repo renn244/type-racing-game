@@ -25,11 +25,6 @@ const UserDashboard = () => {
         { id: 3, name: "Speed Test", difficulty: "Easy", timeLimit: "3 min" },
     ]
 
-    const achievements = [
-        { id: 1, name: "Speed Demon", description: "Type faster than 80 WPM", progress: 75 },
-        { id: 2, name: "Accuracy King", description: "Maintain 98% accuracy", progress: 90 },
-        { id: 3, name: "Marathon Runner", description: "Complete 50 challenges", progress: 45 },
-    ]
 
     return (
         <div className="min-h-[750px] bg-background">
@@ -175,17 +170,17 @@ const UserDashboard = () => {
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-8">
-                                    {achievements.map(achievement => (
+                                    {dashboardInfo?.Achievements?.map((achievement: any) => (
                                         <div key={achievement.id} className="space-y-2">
                                             <div className="flex items-center justify-between">
                                                 <div>
-                                                    <h4 className="font-bold semibold">{achievement.name}</h4>
-                                                    <p className="text-sm text-muted-foreground">{achievement.description}</p>
+                                                    <h4 className="font-bold semibold">{achievement.achievement.name}</h4>
+                                                    <p className="text-sm text-muted-foreground">{achievement.achievement.description}</p>
                                                 </div>
                                                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
                                             </div>
-                                            <Progress value={achievement.progress} className="h-2" />
-                                            <p className="text-sm text-right text-muted-foreground">{achievement.progress}</p>
+                                            <Progress value={achievement.progress} max={achievement.achievement.goal} className="h-2" />
+                                            <p className="text-sm text-right text-muted-foreground">{achievement.progress}/{achievement.achievement.goal}</p>
                                         </div>                                        
                                     ))}
                                 </div>

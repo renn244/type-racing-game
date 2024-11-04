@@ -42,6 +42,11 @@ export class UserService {
                         challenge:true
                     }
                 },
+                Achievements: {
+                    include: {
+                        achievement: true
+                    }
+                }
             }
 
         }
@@ -80,6 +85,11 @@ export class UserService {
             select: {
                 Biometrics: true,
                 userinfo: true,
+                Achievements: {
+                    include: {
+                        achievement: true                        
+                    }
+                },
                 completedChallenges: {
                     include: {
                         challenge: {

@@ -3,12 +3,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateChallengeDto } from './dto/CreateChallenge.dto';
 import { ChallengeCategory, Prisma } from '@prisma/client';
 import { ChallengeResultDto } from './dto/ChallengeResult.dto';
+import { AchievementService } from 'src/achievement/achievement.service';
 
 @Injectable()
 export class ChallengeService {
     DailyChallengeId = 'cm2x7yyn6000522b1w7vznwux' // this will be changed through cronjobs
     constructor(
-        private readonly prisma: PrismaService
+        private readonly prisma: PrismaService,
+        private readonly achievementService: AchievementService
     ) {}
 
     async autoCorrect(body: { search: string }) {
@@ -340,6 +342,8 @@ export class ChallengeService {
                 AverageWpm: averageWpm
             }
         })
+
+        this.achievementService.recalculateUserAchievements(userId)
 
         return saveBiometrics
    }

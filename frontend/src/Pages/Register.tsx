@@ -40,10 +40,11 @@ const Register = () => {
 
         if (response.status === 410) { // handling error in the fields(username, email)
             if (response.data.name) {
-                return setError(response.data.name, {
+                setError(response.data.name, {
                     type: 'manual',
                     message: response.data.message
                 })
+                return setLoading(false)
             } 
         }
 

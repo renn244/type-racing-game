@@ -1,3 +1,4 @@
+import { UserAchievent } from "./Achievement.type";
 import { ChallengeCompleted } from "./Challenge.type";
 
 const Role = {
@@ -42,6 +43,7 @@ export type UserProfile = {
     Biometrics?: UserBiometric
     userinfo?: Userinfo,
     completedChallenges:  ChallengeCompleted[]
+    Achievements: UserAchievent[]
 
     createdAt: string,
 }

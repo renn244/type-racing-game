@@ -5,12 +5,14 @@ import * as bcrypt from 'bcrypt';
 import { Prisma, User } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import { uuid } from 'uuidv4';
+import { AchievementService } from 'src/achievement/achievement.service';
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly jwtService: JwtService,
-        private readonly prisma: PrismaService
+        private readonly prisma: PrismaService,
+        private readonly achievementService: AchievementService
     ) {}
 
     async register({ username, email, password, confirmPassword }: RegisterDto) {
@@ -48,6 +50,8 @@ export class AuthService {
                     userId: user.id,
                 }
             })
+
+            await this.achievementService.createUserAllTheAchievements(user.id)
 
             return user;
         } catch (error) {

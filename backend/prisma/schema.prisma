@@ -25,12 +25,13 @@ model User {
   email     String   @unique
   password  String
 
-  // multiFA    Boolean @default(false)
-  // multiFASecret String?
+  multiFA    Boolean @default(false)
+  multiFASecret String?
 
-  role      ROLE?     @default(USER)
-  userinfo  Userinfo?
-  preferences UserPreferences?
+  role          ROLE?     @default(USER)
+  userinfo      Userinfo?
+  preferences   UserPreferences?
+  Achievements  UserAchievement[]
 
   Biometrics UserBiometric?
   completedChallenges ChallengeCompleted[]
@@ -47,7 +48,6 @@ model Userinfo {
   bio          String?
   location     String?
   socialMedias String[]    
-  // Achievments String? // should be list of achievements later
 
   user          User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -130,4 +130,40 @@ model ChallengeCompleted {
 
   dateCompleted          DateTime @default(now())
   @@unique([challengeId, userId])
+}
+
+enum AchievementCategory {
+  WPM
+  Accuracy
+  Challenges
+}
+
+enum TaskType {
+  Process
+  Milstone
+}
+
+model GlobalAchievements {
+  id          String @id @default(cuid())
+  name        String
+  description String
+  goal        Int
+  taskType    TaskType
+
+  category    AchievementCategory
+  userAchievements UserAchievement[]
+}
+
+model UserAchievement {
+  id            String @id @default(cuid())
+  userId        String 
+  achievementId String
+
+  progress      Int     @default(0)
+  
+  achievement   GlobalAchievements @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  user          User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  dateFinished  DateTime?
+  @@unique([userId, achievementId])
 }

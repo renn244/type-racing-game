@@ -5,10 +5,11 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
+import { AchievementModule } from 'src/achievement/achievement.module';
 
 @Module({
   imports: [
-    PassportModule,
+    PassportModule, AchievementModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET!,
       signOptions: { expiresIn: '5m' },
