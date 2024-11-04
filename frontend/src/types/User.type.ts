@@ -1,3 +1,4 @@
+import { ChallengeCompleted } from "./Challenge.type";
 
 const Role = {
     ADMIN: 'admin',
@@ -31,10 +32,27 @@ export type User = {
     updatedAt: string
 }
 
+export type UserProfile = {
+    id: string,
+    username: string,
+    profile?: string,
+    email: string,
+    role: role,
+
+    Biometrics?: UserBiometric
+    userinfo?: Userinfo,
+    completedChallenges:  ChallengeCompleted[]
+
+    createdAt: string,
+}
+
 export type Userinfo = {
     id: string,
     userId: string,
-
+    
+    bio?: string,
+    location?: string,
+    socialMedias: string[]
 }
 
 export type UserBiometric = {

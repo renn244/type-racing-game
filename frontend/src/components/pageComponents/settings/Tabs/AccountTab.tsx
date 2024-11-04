@@ -64,61 +64,57 @@ const AccountTab = ({
     return (
         <TabsContent value="account">
             <Card>
-                    <CardHeader>
-                        <CardTitle>Account Information</CardTitle>
-                        <CardDescription>
-                            Manage your account details and profile
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-
-                        <div className="flex items-center space-x-4">
-                            <Profile src={previewFile || userInfo.profile} className="w-20 h-20" />
-                            <FileUpload
-                            file={file}
-                            setFile={setFile} 
-                            setPreviewFile={setPreviewFile}
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="UsernameInput">Username</Label>
-                            <Input 
-                            name="username"
-                            onChange={(e) => changeEvent(e)}
-                            value={userInfo.username}
-                            id="UsernameInput"  />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="EmailInput">Email</Label>
-                            <Input 
-                            name="email"
-                            onChange={(e) => changeEvent(e)}
-                            value={userInfo.email} 
-                            id="EmailInput" />
-                        </div>
-                        
-                        <div className="space-y-2">
-                            <Label htmlFor="PasswordInput">Password</Label>
-                            <Input 
-                            readOnly 
-                            type="password"
-                            value={'*************'} 
-                            id="PasswordInput" />
-
-                            <ChangePasswordModal />                            
-                        </div>
-                        
-                    </CardContent>
-                    <CardFooter>
-                        <Button 
-                        onClick={() => saveChanges()}
-                        disabled={isPending}
-                        className="rounded-lg">
-                            {isPending ? <LoadingSpinner /> : "Save Changes"}
-                        </Button>
-                    </CardFooter>
+                <CardHeader>
+                    <CardTitle>Account Information</CardTitle>
+                    <CardDescription>
+                        Manage your account details and profile
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="flex items-center space-x-4">
+                        <Profile src={previewFile || userInfo.profile} className="w-20 h-20" />
+                        <FileUpload
+                        file={file}
+                        setFile={setFile} 
+                        setPreviewFile={setPreviewFile}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="UsernameInput">Username</Label>
+                        <Input 
+                        name="username"
+                        onChange={(e) => changeEvent(e)}
+                        value={userInfo.username}
+                        id="UsernameInput"  />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="EmailInput">Email</Label>
+                        <Input 
+                        name="email"
+                        onChange={(e) => changeEvent(e)}
+                        value={userInfo.email} 
+                        id="EmailInput" />
+                    </div>
+                    
+                    <div className="space-y-2">
+                        <Label htmlFor="PasswordInput">Password</Label>
+                        <Input 
+                        readOnly 
+                        type="password"
+                        value={'*************'} 
+                        id="PasswordInput" />
+                        <ChangePasswordModal />                            
+                    </div>
+                    
+                </CardContent>
+                <CardFooter>
+                    <Button 
+                    onClick={() => saveChanges()}
+                    disabled={isPending}
+                    className="rounded-lg">
+                        {isPending ? <LoadingSpinner /> : "Save Changes"}
+                    </Button>
+                </CardFooter>
             </Card>
         </TabsContent>
     )

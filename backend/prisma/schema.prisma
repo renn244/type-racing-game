@@ -39,14 +39,17 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
-model Userinfo {
-  id        String   @id @default(cuid())
-  userId    String   @unique
 
-  // bio       String?
+model Userinfo {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+
+  bio          String?
+  location     String?
+  socialMedias String[]    
   // Achievments String? // should be list of achievements later
 
-  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserPreferences {

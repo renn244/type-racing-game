@@ -1,5 +1,5 @@
 import { PartialType } from "@nestjs/mapped-types";
-import { IsBoolean, IsNumber, IsString, MaxLength, MinLength } from "class-validator";
+import { IsArray, IsBoolean, IsNumber, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
 
 export class UpdateAccount {
     @IsString()
@@ -7,6 +7,19 @@ export class UpdateAccount {
     
     @IsString()
     email: string;
+}
+
+export class UpdateUserInfo {
+    @IsOptional()
+    @IsString()
+    bio?: string;
+
+    @IsOptional()
+    @IsString()
+    location?: string;
+    
+    @IsArray()
+    socialMedias: string[]
 }
 
 export class UpdatePassword {

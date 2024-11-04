@@ -66,7 +66,7 @@ const NavBar = () => {
                             <nav className="flex flex-col gap-3 px-4 mt-9 font-semibold text-lg">
                                 <div className="flex justify-start gap-3">
                                     <UserRound />
-                                    <Link to={'/profile'}>
+                                    <Link to={`/profile/${user.id}`}>
                                         Profile
                                     </Link> 
                                 </div>

@@ -3,6 +3,7 @@ import AccountTab from "@/components/pageComponents/settings/Tabs/AccountTab"
 import NotificationTab from "@/components/pageComponents/settings/Tabs/NotificationTab"
 import PrivacyTab from "@/components/pageComponents/settings/Tabs/PrivacyTab"
 import TypePreferencesTab from "@/components/pageComponents/settings/Tabs/TypePreferences"
+import UserInfoTab from "@/components/pageComponents/settings/Tabs/UserInfoTab"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import axiosFetch from "@/lib/axiosFetch"
 import { UserSettings } from "@/types/User.type"
@@ -62,12 +63,15 @@ const Settings = () => {
                                             
                             <TabsList>
                                 <TabsTrigger value="account" >Account</TabsTrigger>
+                                <TabsTrigger value="userInfo">User Info</TabsTrigger>
                                 <TabsTrigger value="preferences" >Preferences</TabsTrigger>
                                 <TabsTrigger value="notifications" >Notifications</TabsTrigger>
                                 <TabsTrigger value="privacy" >Privacy & Security</TabsTrigger>
                             </TabsList>
 
                             <AccountTab initialProfile={data.profile} initialUsername={data.username} initialEmail={data.email} />
+
+                            <UserInfoTab initialBio={data.userinfo.bio} initialLocation={data.userinfo.location} initialSocialMedias={data.userinfo.socialMedias} />
 
                             <TypePreferencesTab 
                             initialFontSize={data.preferences.fontSize} 

@@ -2,7 +2,7 @@ import { GoneException, Injectable, NotFoundException } from '@nestjs/common';
 import { ChallengeService } from '../challenge/challenge.service';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt'
-import { UpdateAccount, UpdatePassword, UpdatePrivacy, UpdateTypePreferences } from './dto/UpdateAccount.dto';
+import { UpdateAccount, UpdatePassword, UpdatePrivacy, UpdateTypePreferences, UpdateUserInfo } from './dto/UpdateAccount.dto';
 import { provideSecret } from '../util/ProvideSecret';
 import * as fs from 'fs'
 import * as path from 'path'
@@ -37,7 +37,11 @@ export class UserService {
                 ...includeQuery,
                 email: true,
                 userinfo: true,
-                completedChallenges: true,
+                completedChallenges: {
+                    include: {
+                        challenge:true
+                    }
+                },
             }
 
         }
@@ -57,6 +61,8 @@ export class UserService {
                 id: true,
                 username: true,
                 profile: true,
+                createdAt: true,
+                role: true,
                 ...includeQuery
             }
         })
@@ -197,6 +203,21 @@ export class UserService {
 
         return updateInformation
     } 
+
+    async updateUserInfo(body: UpdateUserInfo, req:any) {
+        const userId = req.user.sub;
+
+        const updateUserinfo = await this.prisma.userinfo.update({
+            where: {
+                userId: userId
+            },
+            data: {
+                ...body
+            }
+        })
+
+        return updateUserinfo
+    }
 
     async updatePassword(body: UpdatePassword, req: any) {
         const userId = req.user.sub;

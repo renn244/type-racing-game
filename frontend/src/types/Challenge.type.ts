@@ -48,6 +48,13 @@ export type ChallengeResultData = {
     time: number, // time that it takes him to finish (seconds)
 }
 
+export type ChallengeCompleted = {
+    id: string,
+
+    challenge: Challenge,
+    dataCompleted: string
+} & ChallengeResultData
+
 export type ChallengesForUser = {
     featured: Challenge[],
     daily: Challenge[],

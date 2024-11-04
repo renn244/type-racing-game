@@ -12,6 +12,8 @@ import { Link } from 'react-router-dom'
 import UserDashboard from './Pages/UserDashboard'
 import Challenges from './Pages/Challenges'
 import Settings from './Pages/Settings'
+import Profile from './Pages/Profile'
+
 
 function App() {
   const { user, loading } = useAuthContext()
@@ -33,7 +35,9 @@ function App() {
         <Route path="/register" element={user ? <Navigate to="/" /> : <Register />} />
         <Route path="/challenge" element={ <Challenge /> } />
         <Route path='/challenges' element={ <Challenges />} />
-        
+    
+        <Route path='/profile/:userId' element={<Profile />} />
+
         {/* should be a private route only available for admins */}
         <Route path='/adminChallenge' element={<AdminChallenge />} />
         <Route path='/addChallenge' element={<AddChallenge />} />
