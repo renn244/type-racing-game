@@ -1,5 +1,5 @@
 import { AchievementCategory, TaskType } from '@prisma/client';
-import { IsString, IsEnum, IsNumber } from 'class-validator';
+import { IsString, IsEnum, IsNumber, IsOptional } from 'class-validator';
 
 export class CreateGlobalAchievementDto {
     @IsString()
@@ -10,6 +10,10 @@ export class CreateGlobalAchievementDto {
 
     @IsNumber()
     goal: number;
+
+    @IsNumber()
+    @IsOptional()
+    occurrence: number;
 
     @IsEnum(TaskType)
     taskType: TaskType;

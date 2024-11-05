@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsTrigger, TabsList, TabsContent } from "@/components/ui/tabs"
 import axiosFetch from "@/lib/axiosFetch"
 import { useQuery } from "@tanstack/react-query"
-import { Trophy, Target, Clock, Zap, Award, TrendingUp, History } from 'lucide-react'
+import { Trophy, Target, Clock, Zap, Award, RotateCcw } from 'lucide-react'
 import { format } from 'date-fns'
+import AchievementCard from "@/components/common/AchievementCard"
+import LoadingSpinner from "@/components/common/LoadingSpinner"
+import { Link } from "react-router-dom"
 
 const UserDashboard = () => {
 
@@ -13,7 +15,7 @@ const UserDashboard = () => {
         queryKey: ['userDashboardInfo'],
         queryFn: async () => {
             const response = await axiosFetch.get('/user/getDashboardInfo')
-            console.log(response.data)
+
             return response.data 
         }
     })
@@ -25,6 +27,9 @@ const UserDashboard = () => {
         { id: 3, name: "Speed Test", difficulty: "Easy", timeLimit: "3 min" },
     ]
 
+    if(isLoading) {
+        return <LoadingSpinner />
+    }
 
     return (
         <div className="min-h-[750px] bg-background">
@@ -115,7 +120,9 @@ const UserDashboard = () => {
                                                             <p className="font-semibold">{completedChallenge.wpm} WPM</p>
                                                             <p className="text-sm text-muted-foreground">{completedChallenge.accuracy}% accuracy</p>
                                                         </div>
-                                                        <History className="h-4 w-4 text-muted-foreground" />
+                                                        <Link title="try again" to={`/challenge?challengeId=${completedChallenge.challenge.id}`} >
+                                                            <RotateCcw className="h-4 w-4 text-muted-foreground" />
+                                                        </Link>
                                                     </div>
                                                 </div>
                                             ))}
@@ -171,17 +178,7 @@ const UserDashboard = () => {
                             <CardContent>
                                 <div className="space-y-8">
                                     {dashboardInfo?.Achievements?.map((achievement: any) => (
-                                        <div key={achievement.id} className="space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <div>
-                                                    <h4 className="font-bold semibold">{achievement.achievement.name}</h4>
-                                                    <p className="text-sm text-muted-foreground">{achievement.achievement.description}</p>
-                                                </div>
-                                                <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                                            </div>
-                                            <Progress value={achievement.progress} max={achievement.achievement.goal} className="h-2" />
-                                            <p className="text-sm text-right text-muted-foreground">{achievement.progress}/{achievement.achievement.goal}</p>
-                                        </div>                                        
+                                        <AchievementCard achievement={achievement} key={achievement.id} />                               
                                     ))}
                                 </div>
                             </CardContent>

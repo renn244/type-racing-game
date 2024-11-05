@@ -1,18 +1,14 @@
 import LoadingSpinner from "@/components/common/LoadingSpinner"
-import AdminTablePopOver from "@/components/pageComponents/adminDashboard/adminChallengeTablePopOver/AdminTablePopOver"
-import ChallengesTableHeader from "@/components/pageComponents/adminDashboard/ChallengesTableHeader"
+import AchievementTableHeader from "@/components/pageComponents/adminDashboard/AchievementTableHeader"
+import AdminTablePopOver from "@/components/pageComponents/adminDashboard/adminAchievementTablePopOver/AdminTablePopOver"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import axiosFetch from "@/lib/axiosFetch"
-import { Challenge } from "@/types/Challenge.type"
 import { useQuery } from "@tanstack/react-query"
-import { format } from 'date-fns'
-import { useState } from "react"
+import { act, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 
-// add the categories in the table? and might also have filters for it
-
-const AdminChallenge = () => {
+const AdminGlobalAchievement = () => {
     const [searchParams, setSearchParams] = useSearchParams()
     const [hasNext, setHasNext] = useState<boolean>()
     const page = searchParams.get('page') || '1'
@@ -29,17 +25,17 @@ const AdminChallenge = () => {
         setSearchParams({ page: pageParam.toString() })
     }
 
-    const { data: challenges, isLoading } = useQuery({
-        queryKey: ['challenges', page, search],
+    const { data, isLoading } = useQuery({
+        queryKey: ['globalAchievements', page, search],
         queryFn: async () => {
-            const response = await axiosFetch.get(`/challenge/getAll?page=${page}&search=${search}`)
-
+            const response = await axiosFetch(`/globalAchievement/getAllGlobalAchievements?page=${page}&search=${search}`)
+            
             setHasNext(response.data.hasNext)
-            return response.data.challenges as Challenge[]
+            return response.data
         }
     })
-
-    if (isLoading) {
+        
+    if(isLoading) {
         return <LoadingSpinner />
     }
 
@@ -47,49 +43,46 @@ const AdminChallenge = () => {
         <div className="w-full min-h-[750px]">
             <div className="max-w-[1200px] w-full mx-auto py-7">
                 <div className="max-w-[1000px] space-y-4">
-                    <ChallengesTableHeader />
+                    <AchievementTableHeader />
                     <div className="rounded-md border-2 p-2 max-w-[1000px] bg-card shadow-sm">
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    
-                                    <TableHead className="text-primary font-bold text-lg  w-[250px]">
-                                        id
-                                    </TableHead>
 
-                                    <TableHead className="text-primary font-bold text-lg w-[400px]">
-                                        title 
+                                    <TableHead className="text-primary font-bold text-lg w-[250px]">
+                                        name
                                     </TableHead>
 
                                     <TableHead className="text-primary font-bold text-lg">
-                                        difficulty
+                                        description
                                     </TableHead>
 
                                     <TableHead className="text-primary font-bold text-lg w-[100px]">
-                                        createdAt
+                                        taskType
+                                    </TableHead>
+
+                                    <TableHead className="text-primary font-bold text-lg w-[40px]">
+                                        category
                                     </TableHead>
 
                                     <TableHead className="text-primary font-bold text-lg w-[25px]">
                                         {/* this is for the function */}
                                     </TableHead>
-
+                                    
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-
-                                {challenges?.map((challenge) => {
-                                    return (
-                                        <TableRow key={challenge.id}>
-                                            <TableCell className="font-medium">{challenge.id}</TableCell>
-                                            <TableCell className="font-medium">{challenge.title}</TableCell>
-                                            <TableCell className="font-medium">{challenge.difficulty}</TableCell>
-                                            <TableCell className="font-medium">{format(new Date(challenge.createdAt), 'yyyy-MM-d')}</TableCell>
-                                            <TableCell className="font-medium">
-                                                <AdminTablePopOver challenge={challenge} />
-                                            </TableCell>
-                                        </TableRow>
-                                    )
-                                })}
+                                {data?.achievements?.map((achievement: any) => (
+                                    <TableRow key={achievement.id}>
+                                        <TableCell className="font-medium">{achievement.name}</TableCell>
+                                        <TableCell className="font-medium">{achievement.description}</TableCell>
+                                        <TableCell className="font-medium">{achievement.taskType}</TableCell>
+                                        <TableCell className="font-medium">{achievement.category}</TableCell>
+                                        <TableCell className="font-medium">
+                                            <AdminTablePopOver globalAchivement={achievement} />
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
                             </TableBody>
                         </Table>
                     </div>
@@ -100,17 +93,17 @@ const AdminChallenge = () => {
                             </span>
                         </div>
                         <div>
-                            <Button 
+                            <Button
                             disabled={page === '1'}
-                            variant={'outline'} 
                             onClick={() => changePage('prev')}
+                            variant={'outline'}
                             >
                                 Prev
                             </Button>
-                            <Button 
+                            <Button
                             disabled={!hasNext}
-                            variant={'outline'} 
                             onClick={() => changePage('next')}
+                            variant={'outline'}
                             >
                                 Next
                             </Button>
@@ -122,8 +115,4 @@ const AdminChallenge = () => {
     )
 }
 
-
-
-
-
-export default AdminChallenge
+export default AdminGlobalAchievement   

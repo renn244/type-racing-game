@@ -140,7 +140,7 @@ enum AchievementCategory {
 
 enum TaskType {
   Process
-  Milstone
+  Milestone
 }
 
 model GlobalAchievements {
@@ -150,6 +150,9 @@ model GlobalAchievements {
   goal        Int
   taskType    TaskType
 
+  // Occurrence specifies how many times the user must meet the condition if the achievement is cumulative
+  occurrence  Int?   // Optional, only used for "Process" achievements
+  
   category    AchievementCategory
   userAchievements UserAchievement[]
 }

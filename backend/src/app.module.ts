@@ -8,13 +8,14 @@ import { ChallengeModule } from './challenge/challenge.module';
 import { UserModule } from './user/user.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AchievementModule } from './achievement/achievement.module';
+import { GlobalAchievementModule } from './global-achievement/global-achievement.module';
 
 @Module({
   imports: [AuthModule, PrismaModule, 
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true
-    }), ChallengeModule, UserModule, AchievementModule],
+    }), ChallengeModule, UserModule, AchievementModule, GlobalAchievementModule],
   controllers: [AppController],
   providers: [AppService],
 })

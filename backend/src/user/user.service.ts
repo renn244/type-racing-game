@@ -100,6 +100,10 @@ export class UserService {
                                 createdAt: true
                             }
                         }
+                    },
+                    take: 5,
+                    orderBy: {
+                        dateCompleted: 'desc'
                     }
                 }
             }
@@ -171,7 +175,7 @@ export class UserService {
             }
         })
 
-        if(doesProfileExist) {
+        if(doesProfileExist.profile) {
             this.DeleteProfileFile(doesProfileExist.profile)
         }
 

@@ -13,6 +13,8 @@ import UserDashboard from './Pages/UserDashboard'
 import Challenges from './Pages/Challenges'
 import Settings from './Pages/Settings'
 import Profile from './Pages/Profile'
+import AddGlobalAchievement from './Pages/adminDashboard/Achievement/AddGlobalAchievement'
+import AdminGlobalAchievement from './Pages/adminDashboard/Achievement/AdminGlobalAchievement'
 
 
 function App() {
@@ -41,6 +43,9 @@ function App() {
         {/* should be a private route only available for admins */}
         <Route path='/adminChallenge' element={<AdminChallenge />} />
         <Route path='/addChallenge' element={<AddChallenge />} />
+
+        <Route path='/addGlobalAchievement' element={<AddGlobalAchievement />} />
+        <Route path='/AdminGlobalAchievement' element={<AdminGlobalAchievement />} />
       </Routes>
 
       <footer className='bg-background border-t'>

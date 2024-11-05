@@ -21,6 +21,16 @@ export type GlobalAchievement = {
     name: string;
     description: string;
     goal: number;
+    occurrence?: number;
+    category: Category;
+    taskType: TaskType;
+}
+
+export type GlobalAchievementForm = {
+    name: string;
+    description: string;
+    goal: number;
+    occurrence?: number;
     category: Category;
     taskType: TaskType;
 }

@@ -1,13 +1,13 @@
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import axiosFetch from "@/lib/axiosFetch"
 import useDebounce from "@/lib/useDebounce"
 import { FormEvent, useEffect, useState } from "react"
 import { useSearchParams } from "react-router-dom"
-import { Button } from "../../ui/button"
-import { Input } from "../../ui/input"
 
-const ChallengesTableHeader = () => {
+const AchievementTableHeader = () => {
     const [searchParams, setSearchParams] = useSearchParams()
-    
+
     const [search, setSearch] = useState<string>(searchParams.get('search') || "")
     const [autoCorrectSearch, setAutoCorrectSearch] = useState<any[]>([])
 
@@ -18,7 +18,7 @@ const ChallengesTableHeader = () => {
             if (debounce === "") {
                 return setAutoCorrectSearch([])
             }
-            const response = await axiosFetch.post('/challenge/autoCorrect', {
+            const response = await axiosFetch.post('/globalAchievement/autoCorrect', {
                 search: debounce
             })
 
@@ -45,7 +45,7 @@ const ChallengesTableHeader = () => {
                 placeholder="Search Title" />
                 <datalist id="autoCorrect">
                     {autoCorrectSearch.map((item, index) => (
-                        <option key={index} value={item.name} />
+                        <option  key={index} value={item.name} />
                     ))}
                 </datalist>
                 <Button
@@ -55,11 +55,11 @@ const ChallengesTableHeader = () => {
                 </Button>
             </form>
 
-            <Button onClick={() => window.location.assign('/addChallenge')}>
-                Add Challenge
+            <Button onClick={() => window.location.assign('/addGlobalAchievement')}>
+                Add Global Achievement
             </Button>
         </header>
     )
 }
 
-export default ChallengesTableHeader
+export default AchievementTableHeader

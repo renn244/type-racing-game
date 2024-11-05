@@ -13,6 +13,7 @@ import { UserProfile } from "@/types/User.type"
 import LoadingSpinner from "@/components/common/LoadingSpinner"
 import { format } from 'date-fns'
 import { useAuthContext } from "@/Context/AuthContext"
+import AchievementCard from "@/components/common/AchievementCard"
 
 const Profile = () => {
     const { user: userCheck } = useAuthContext()
@@ -139,7 +140,7 @@ const Profile = () => {
                         
                     </Card>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    {/* <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                         {true ? (
                             <Card className="col-span-4">
                                 <CardContent className="h-32">
@@ -158,7 +159,7 @@ const Profile = () => {
                             // ))
                             <div></div>
                         )}
-                    </div>
+                    </div> */}
 
                     <Tabs defaultValue="achievements">
                         <TabsList className="grid w-full grid-cols-2" >
@@ -178,17 +179,7 @@ const Profile = () => {
                                         <PrivateInfo />
                                     ) : (
                                         user.Achievements.map((achievement) => (
-                                            <div key={achievement.id} className="space-y-2">
-                                                <div className="flex justify-between items-center">
-                                                    <div className="flex items-center space-x-2">
-                                                        <Award className="h-4 w-4 text-primary" />
-                                                        <span className="font-medium">{achievement.achievement.name}</span>
-                                                    </div>
-                                                    <span className="text-sm text-muted-foreground">{achievement.progress}/{achievement.achievement.goal}</span>
-                                                </div>
-                                                <Progress value={achievement.progress} max={achievement.achievement.goal} className="h-2" />
-                                                <p className="text-sm text-muted-foreground">{achievement.achievement.description}</p>
-                                            </div>
+                                            <AchievementCard achievement={achievement} key={achievement.id} />
                                         ))
                                     )}
                                 </CardContent>
