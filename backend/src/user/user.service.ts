@@ -86,8 +86,11 @@ export class UserService {
                 Biometrics: true,
                 userinfo: true,
                 Achievements: {
+                    where: {
+                        isFinished: false
+                    },
                     include: {
-                        achievement: true                        
+                        achievement: true                     
                     }
                 },
                 completedChallenges: {

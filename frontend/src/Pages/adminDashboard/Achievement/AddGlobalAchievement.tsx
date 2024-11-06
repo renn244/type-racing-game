@@ -42,6 +42,15 @@ const AddGlobalAchievement = () => {
             return  
         }
 
+        if(data.category === "Challenges" && data.taskType === "Process") {
+            setError('category', {
+                type: 'manual',
+                message: 'Challenges category cannot have a process taskType'
+            })
+            setFocus('taskType')
+            return
+        }
+
         const response = await axiosFetch.post('/globalAchievement/createGlobalAchievement', data)
 
         if (response.status === 410) {
@@ -117,7 +126,7 @@ const AddGlobalAchievement = () => {
                                 <Select onValueChange={value => {
                                     setValue('taskType', (value as TaskType))
                                     setTaskType(value as TaskType)
-                                    if (errors.category) {
+                                    if (errors.taskType) {
                                         clearErrors('taskType')
                                     }
                                 }}>

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import axiosFetch from "@/lib/axiosFetch"
 import { useQuery } from "@tanstack/react-query"
-import { act, useState } from "react"
+import { useState } from "react"
 import { useSearchParams } from "react-router-dom"
 
 const AdminGlobalAchievement = () => {

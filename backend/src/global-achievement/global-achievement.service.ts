@@ -2,11 +2,13 @@ import { BadRequestException, GoneException, Injectable, InternalServerErrorExce
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateGlobalAchievementDto } from './dto/createAchievement.dto';
+import { AchievementService } from 'src/achievement/achievement.service';
 
 @Injectable()
 export class GlobalAchievementService {
     constructor(
-        private readonly prisma: PrismaService
+        private readonly prisma: PrismaService,
+        private readonly achievementService: AchievementService
     ) {}
 
     async autoCorrect(body: { search: string}) {
@@ -82,6 +84,8 @@ export class GlobalAchievementService {
                 ...body
             }
         });
+
+        this.achievementService.addUserAchievement(achievement.id);
 
         return achievement;
     }

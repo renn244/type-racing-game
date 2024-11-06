@@ -39,7 +39,7 @@ export type UserAchievent = {
     id: string;
     userId: string;
     achievementId: string;
-
+    isFinished: boolean;
     progress: number;
 
     achievement: GlobalAchievement;

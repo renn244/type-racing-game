@@ -161,6 +161,7 @@ model UserAchievement {
   id            String @id @default(cuid())
   userId        String 
   achievementId String
+  isFinished    Boolean @default(false) // this will check if the task is already finish
 
   progress      Int     @default(0)
   

@@ -18,7 +18,7 @@ const DeleteAchievementModal = ({ achievementId }: DeleteAchievementModalProps) 
     const { mutate, isPending } = useMutation({
         mutationKey: ["deleteAchievement"],
         mutationFn: async () => {
-            const response = await axiosFetch.delete(`/achievement/deleteAchievement?id=${achievementId}`);
+            const response = await axiosFetch.delete(`/globalAchievement/deleteGlobalAchievement?id=${achievementId}`);
 
             if (response.status === 404) {
                 throw new Error("achievement not found");
@@ -30,7 +30,7 @@ const DeleteAchievementModal = ({ achievementId }: DeleteAchievementModalProps) 
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["achievements"],
+                queryKey: ["globalAchievements"],
             });
             setIsOpen(false);
         },
