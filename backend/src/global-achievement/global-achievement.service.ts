@@ -1,8 +1,8 @@
 import { BadRequestException, GoneException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateGlobalAchievementDto } from './dto/createAchievement.dto';
-import { AchievementService } from 'src/achievement/achievement.service';
+import { AchievementService } from '../achievement/achievement.service';
 
 @Injectable()
 export class GlobalAchievementService {
@@ -78,7 +78,6 @@ export class GlobalAchievementService {
                 message: 'Occurrence is required for Process type'
             })
         }
-
         const achievement = await this.prisma.globalAchievements.create({
             data: {
                 ...body
@@ -116,10 +115,7 @@ export class GlobalAchievementService {
     async updateGlobalAchievement(id: string, body: CreateGlobalAchievementDto) {
         try {
             if(body.taskType === 'Process' && !body.occurrence) {
-                throw new BadRequestException({
-                    name: 'occurrence',
-                    message: 'Occurrence is required for Process type'
-                })
+                throw new BadRequestException("Occurrence is required for Process type")
             }
 
             const achievement = await this.prisma.globalAchievements.update({
@@ -141,6 +137,11 @@ export class GlobalAchievementService {
                     })
                 }
                 throw new GoneException('unknown error in the database')
+            } else if (error instanceof BadRequestException) {
+                throw new BadRequestException({
+                    name: 'occurrence',
+                    message: 'Occurrence is required for Process type'
+                })
             }
             throw new InternalServerErrorException('internal server erro')
         }
