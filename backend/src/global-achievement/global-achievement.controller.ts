@@ -1,7 +1,10 @@
-import { Body, Controller, Delete, Get, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { GlobalAchievementService } from './global-achievement.service';
 import { CreateGlobalAchievementDto } from './dto/createAchievement.dto';
+import { AdminOnlyGuard } from 'src/guard/AdminOnlyGuard';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard, AdminOnlyGuard)
 @Controller('globalAchievement')
 export class GlobalAchievementController {
     constructor(

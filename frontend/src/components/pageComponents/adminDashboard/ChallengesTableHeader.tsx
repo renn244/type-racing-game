@@ -45,7 +45,7 @@ const ChallengesTableHeader = () => {
                 placeholder="Search Title" />
                 <datalist id="autoCorrect">
                     {autoCorrectSearch.map((item, index) => (
-                        <option key={index} value={item.name} />
+                        <option key={index} value={item.title} />
                     ))}
                 </datalist>
                 <Button

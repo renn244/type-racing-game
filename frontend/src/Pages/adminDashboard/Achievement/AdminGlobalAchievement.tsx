@@ -28,11 +28,12 @@ const AdminGlobalAchievement = () => {
     const { data, isLoading } = useQuery({
         queryKey: ['globalAchievements', page, search],
         queryFn: async () => {
-            const response = await axiosFetch(`/globalAchievement/getAllGlobalAchievements?page=${page}&search=${search}`)
+            const response = await axiosFetch.get(`/globalAchievement/getAllGlobalAchievements?page=${page}&search=${search}`)
             
             setHasNext(response.data.hasNext)
             return response.data
-        }
+        },
+        retry: false,
     })
         
     if(isLoading) {

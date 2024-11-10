@@ -6,6 +6,8 @@ import { UpdateAccount, UpdatePassword, UpdatePrivacy, UpdateTypePreferences, Up
 import { provideSecret } from '../util/ProvideSecret';
 import * as fs from 'fs'
 import * as path from 'path'
+
+
 @Injectable()
 export class UserService {
     constructor(
