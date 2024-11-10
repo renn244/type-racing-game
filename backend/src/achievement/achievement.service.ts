@@ -1,7 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { AchievementCategory, TaskType } from '@prisma/client';
-import { progress } from 'framer-motion';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { AchievementCategory, Prisma, TaskType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { InternalServerError } from 'openai';
 
 @Injectable()
 export class AchievementService {
@@ -22,14 +22,25 @@ export class AchievementService {
     }
 
     async createUserAchievement(userId: string, achievementId: string) {
-    
-        // Create the UserAchievement entry
-        return await this.prisma.userAchievement.create({
-            data: {
-                userId: userId,
-                achievementId: achievementId,
-            },
-        });
+        try {
+            // Create the UserAchievement entry
+            return await this.prisma.userAchievement.create({
+                data: {
+                    userId: userId,
+                    achievementId: achievementId,
+                },
+            });
+        } catch (error) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError) {
+                if(error.code === 'P2002') {
+                    return new BadRequestException({
+                        name: error.meta.target,
+                        message: "achievement already Exist on this user"
+                    })
+                }
+            } 
+            throw new InternalServerErrorException("internal server error")
+        }
     }
 
     async createUserAllTheAchievements(userId: string) {
@@ -89,6 +100,31 @@ export class AchievementService {
         return undefined;
     }
 
+    async updateProgress(achievement: any, newProgress: number, taskType: TaskType) {
+        const achievementBasis = taskType === "Milestone" ? achievement.achievement.goal : achievement.achievement.occurrence
+
+        let query = {
+            isFinished: false,
+            progress: newProgress
+        }
+
+        if(newProgress >= achievementBasis) {
+            query = {
+                isFinished: true,
+                progress: achievementBasis
+            }
+        }
+
+        return await this.prisma.userAchievement.update({
+            where: {
+                id: achievement.id
+            },
+            data: {
+                ...query
+            }
+        })
+    }
+
     async recalculateProcessAchievement(achievement: any, userInfo: any) {
         // new progress is about the occurence of the process taskType of the achievement
         let newProgress = achievement.progress;
@@ -104,31 +140,11 @@ export class AchievementService {
             const highestAccuracy = Math.max(...userInfo.completedChallenges.map(
                 challenge => challenge.accuracy >= achievement.achievement.goal
             ), 0);
-            console.log(highestAccuracy) 
             newProgress = highestAccuracy;
         }
-
+        console.log(newProgress, achievement.progress)
         if(newProgress !== achievement.progress) {
-            let query = {
-                isFinished: false,
-                progress: newProgress
-            }
-
-            if(newProgress === achievement.achievement.occurrence) {
-                query = {
-                    isFinished: true,
-                    progress: achievement.achievement.occurrence
-                }
-            }
-
-            await this.prisma.userAchievement.update({
-                where: {
-                    id: achievement.id
-                },
-                data: {
-                    ...query
-                }
-            })
+            return await this.updateProgress(achievement, newProgress, 'Process')
         }
 
         return undefined;
@@ -148,25 +164,7 @@ export class AchievementService {
         }
 
         if(newProgress !== achievement.progress) {
-            let query = {
-                isFinished: false,
-                progress: newProgress
-            }
-            if(newProgress >= achievement.achievement.goal) {
-                query = {
-                    isFinished: true,
-                    progress: achievement.achievement.goal
-                }
-            }
-
-            await this.prisma.userAchievement.update({
-                where: {
-                    id: achievement.id
-                },
-                data: {
-                    ...query
-                }
-            })
+           return  await this.updateProgress(achievement, newProgress, "Milestone")
         }
 
         return undefined;
