@@ -84,6 +84,7 @@ const Settings = () => {
                             <PrivacyTab 
                             initialPrivateprofile={data.preferences.privateProfile}
                             initialShowstats={data.preferences.showStats}
+                            initialMultiFactor={data.multiFA}
                             />
                         </Tabs>
                     ) 

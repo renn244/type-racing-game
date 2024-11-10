@@ -60,3 +60,8 @@ export class UpdatePrivacy {
     privateProfile: boolean;
     showStats: boolean;
 }
+
+export class Update2FA {
+    @IsBoolean()
+    multiFA: boolean;
+}

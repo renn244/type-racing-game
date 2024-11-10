@@ -2,7 +2,7 @@ import { GoneException, Injectable, NotFoundException } from '@nestjs/common';
 import { ChallengeService } from '../challenge/challenge.service';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt'
-import { UpdateAccount, UpdatePassword, UpdatePrivacy, UpdateTypePreferences, UpdateUserInfo } from './dto/UpdateAccount.dto';
+import { Update2FA, UpdateAccount, UpdatePassword, UpdatePrivacy, UpdateTypePreferences, UpdateUserInfo } from './dto/UpdateAccount.dto';
 import { provideSecret } from '../util/ProvideSecret';
 import * as fs from 'fs'
 import * as path from 'path'
@@ -136,6 +136,7 @@ export class UserService {
                 email: true,
                 username: true,
                 profile: true,
+                multiFA: true,
                 userinfo: true,
                 preferences: true
             }
@@ -310,21 +311,18 @@ export class UserService {
         return updatePrivacy
     }
 
-    // async update2FA(body: any, req: any) {
-    //     const userId = req.user.sub;
+    async update2FA(body: Update2FA, req: any) {
+        const userId = req.user.sub
+        
+        const update2FA = await this.prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                multiFA: body.multiFA,
+            }
+        })
 
-    //     const secret = provideSecret()
-
-    //     const update2FA = await this.prisma.user.update({
-    //         where: {
-    //             id: userId
-    //         },
-    //         data: {
-    //             multiFA: body.twoFactorAuth,
-    //             multiFASecret: provideSecret,
-    //         }
-    //     })
-
-    //     return update2FA
-    // }
+        return update2FA
+    }
 }

@@ -11,22 +11,26 @@ import Enable2FAModal from "../Enable2FAModal"
 
 type PrivacyTabProps = {
     initialPrivateprofile: boolean,
-    initialShowstats: boolean
+    initialShowstats: boolean,
+    initialMultiFactor: boolean
 }
 
 const PrivacyTab = ({
     initialPrivateprofile,
-    initialShowstats
+    initialShowstats,
+    initialMultiFactor
 }: PrivacyTabProps) => {
     const [privateProfile, setPrivateProfile] = useState<boolean>(initialPrivateprofile)
     const [showStats, setShowStats] = useState<boolean>(initialShowstats)
+    const [multiFactor, setMultiFactor] = useState<boolean>(initialMultiFactor)
 
     const { mutate: saveChanges, isPending } = useMutation({
         mutationKey: ['updatePrivacySettings'],
         onMutate: async () => {
             const response = await axiosFetch.post('/user/updatePrivacySettings', {
                 privateProfile: privateProfile,
-                showStats: showStats
+                showStats: showStats,
+                multiFA: multiFactor
             })
 
             return response.data
@@ -52,8 +56,11 @@ const PrivacyTab = ({
                         <Switch checked={showStats} onCheckedChange={setShowStats} id="show-stats" />
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="two-factor">Two-Factor Authentication</Label>
-                        <Enable2FAModal />
+                        <Label htmlFor="two-factor">
+                            Two-Factor Authentication {""} 
+                            <span className="font-bold">{multiFactor ? "(Enabled)" : "(Disabled)"}</span>
+                        </Label>
+                        <Enable2FAModal MultiFactor={multiFactor} setMultiFactor={setMultiFactor} />
                     </div>
                 </CardContent>
                 <CardFooter>

@@ -81,6 +81,7 @@ export type UserSettings = {
     id: string,
     profile?: string,
     username: string,
+    multiFA: boolean,
     email: string,
     preferences: UserPreference,
     userinfo: Userinfo,
