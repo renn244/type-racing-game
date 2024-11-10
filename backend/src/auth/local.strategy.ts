@@ -9,8 +9,9 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         super();
     }
 
-    async validate(username: string, password: string): Promise<any> {
+    async validate(username: string, password: string) {
         const user = await this.authService.validateLocal(username, password)
+
         if(!user.user) {
             throw new GoneException({
                 name: user.name,
@@ -18,6 +19,17 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
             })
         }
         
-        return user.user;
+        // checking if the user has multiFA enabled
+        if(user.user.multiFA) {
+            return {
+                user: user.user, 
+                multiFA: "2fa"
+            }
+        }
+
+        return {
+            user: user.user
+        }
+
     }
 }

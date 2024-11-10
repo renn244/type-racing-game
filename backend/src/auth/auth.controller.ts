@@ -11,9 +11,18 @@ export class AuthController {
     @UseGuards(LocalStrategy)
     @Post('login')
     async login(@Request() req: any) {
-        return this.authService.login(req.user);
+        if(req.user.multiFA) {
+            // make a service in the auth that makes a new token and sends gives it to the database for email verification
+            return this.authService.generateEmailToken(req.user.user)
+        }
+        return this.authService.login(req.user.user);
     }
-        
+     
+    @Post("VerifyMultiFa")
+    async verifyEmailToken(@Body() body: any) {
+        return this.authService.veryfyEmailToken(body.userId, body.token)
+    }
+
     @Post('register')
     register(@Body() body: RegisterDto) {
         return this.authService.register(body);

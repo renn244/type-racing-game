@@ -42,6 +42,11 @@ const Login = () => {
             return
         }
 
+        if(response?.data?.redirect) {
+            setLoading(false)
+            return window.location.assign(`/multiFa?userId=${response.data.userId}&email=${response.data.email}`)
+        }
+
         localStorage.setItem('access_token', response.data.access_token)
         localStorage.setItem('refresh_token', response.data.refresh_token)
 

@@ -1,4 +1,4 @@
-import { GoneException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, GoneException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import RegisterDto from './dto/Register.dto';
 import * as bcrypt from 'bcrypt';
@@ -6,13 +6,15 @@ import { Prisma, User } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import { uuid } from 'uuidv4';
 import { AchievementService } from 'src/achievement/achievement.service';
+import { EmailSenderService } from 'src/email-sender/email-sender.service';
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly jwtService: JwtService,
         private readonly prisma: PrismaService,
-        private readonly achievementService: AchievementService
+        private readonly achievementService: AchievementService,
+        private readonly emailSender: EmailSenderService
     ) {}
 
     async register({ username, email, password, confirmPassword }: RegisterDto) {
@@ -117,6 +119,7 @@ export class AuthService {
             sub: user.id,
             profile: user.profile,
             email: user.email,
+            role: user.role,
             createAt: user.createdAt
         }
 
@@ -131,6 +134,74 @@ export class AuthService {
             access_token: access_token,
             refresh_token: refresh_token
         }
+    }
+
+    async generateEmailToken(user: User) {
+        const token = uuid().replace(/\D/g, '').substring(0, 6);
+
+        // delete all the token regarding this userId because it needs to be unique
+        await this.prisma.emailTokens.deleteMany({
+            where: {
+                userId: user.id
+            }
+        })
+
+        const createEmailToken = await this.prisma.emailTokens.create({
+            data: {
+                userId: user.id,
+                token: token,
+                expiresAt: new Date(Date.now() + 1000 * 60 * 10) // 10 minutes33333
+            }
+        })
+
+        // send EmailAddress
+        await this.emailSender.sendEmail(user.email, '2FA Code', token)
+
+        return {
+            redirect: true,
+            email: user.email,
+            userId: createEmailToken.userId,
+            message: "2fa is required"
+        }
+    }
+
+    async veryfyEmailToken(userId: string, token: string) {
+
+        const getEmailToken = await this.prisma.emailTokens.findFirst({
+            where: {    
+                userId: userId
+            }
+        })
+
+        if(!getEmailToken) {
+            throw new BadRequestException({
+                name: 'user',
+                message: 'failed to find the user Token'
+            })
+        }
+
+        if(getEmailToken.token !== token) {
+            throw new BadRequestException({
+                name: 'code',
+                message: 'code is invalid'
+            })
+        }
+
+        if(getEmailToken.expiresAt < new Date()) {
+            throw new BadRequestException({
+                name: 'code',
+                message: 'code has expired'
+            })
+        }
+
+        // successful token verification
+        const user = await this.prisma.user.findFirst({
+            where: {
+                id: getEmailToken.userId
+            }
+        })
+
+        return this.login(user)
     }
 
     async checkUser(req: any) {

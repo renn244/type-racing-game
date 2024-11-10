@@ -6,10 +6,11 @@ import { LocalStrategy } from './local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
 import { AchievementModule } from 'src/achievement/achievement.module';
+import { EmailSenderModule } from 'src/email-sender/email-sender.module';
 
 @Module({
   imports: [
-    PassportModule, AchievementModule,
+    PassportModule, AchievementModule, EmailSenderModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET!,
       signOptions: { expiresIn: '5m' },

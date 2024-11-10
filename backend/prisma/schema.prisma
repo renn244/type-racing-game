@@ -26,7 +26,6 @@ model User {
   password  String
 
   multiFA    Boolean @default(false)
-  multiFASecret String?
 
   role          ROLE?     @default(USER)
   userinfo      Userinfo?
@@ -77,6 +76,14 @@ model UserBiometric {
   TimePracticed     String  @default("0h 0m 0s") 
 
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// this is used for email verification and multi factor authentication
+model EmailTokens {
+  id        String   @id @default(cuid())
+  userId    String    @unique
+  token     String  
+  expiresAt DateTime 
 }
 
 // use crons job to delete this later on

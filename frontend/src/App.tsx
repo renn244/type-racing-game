@@ -15,6 +15,7 @@ import Settings from './Pages/Settings'
 import Profile from './Pages/Profile'
 import AddGlobalAchievement from './Pages/adminDashboard/Achievement/AddGlobalAchievement'
 import AdminGlobalAchievement from './Pages/adminDashboard/Achievement/AdminGlobalAchievement'
+import MultiFa from './Pages/MultiFa'
 
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
         <Route path='/dashboard' element={user ? <UserDashboard /> : <Navigate to={'/login'} />} />
         <Route path="/settings" element={user ? <Settings /> : <Navigate to={'/login'} /> } />
         <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
+        <Route path='/multiFa' element={user ? <Navigate to={'/'} /> : <MultiFa />} />
         <Route path="/register" element={user ? <Navigate to="/" /> : <Register />} />
         <Route path="/challenge" element={ <Challenge /> } />
         <Route path='/challenges' element={ <Challenges />} />

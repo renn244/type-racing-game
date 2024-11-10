@@ -27,6 +27,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const { data: user, isLoading} = useQuery({
         queryKey: ['user'],
         queryFn: async () => {
+            if(!localStorage.getItem('access_token') || !localStorage.getItem("refresh_token")) return
+
             const response = await axiosFetch.get('/auth/check').catch((error) => {
                 if (error.status === 401) {
                     return 
