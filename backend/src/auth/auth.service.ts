@@ -53,6 +53,14 @@ export class AuthService {
                 }
             })
 
+            const createPlayerInstance = await this.prisma.player.create({
+                data: {
+                    userId: user.id,
+                    username: user.username,
+                    
+                }
+            })
+
             await this.achievementService.createUserAllTheAchievements(user.id)
 
             return user;
@@ -85,6 +93,9 @@ export class AuthService {
         const user = await this.prisma.user.findUnique({
             where: {
                 username
+            },
+            include: {
+                Player: true
             }
         })
 
@@ -113,16 +124,17 @@ export class AuthService {
         }
     }
 
-    async login(user: User) {
+    async login(user: any) {
         const payload = {
             username: user.username,
             sub: user.id,
             profile: user.profile,
             email: user.email,
             role: user.role,
-            createAt: user.createdAt
+            createAt: user.createdAt,
+            player: user.Player
         }
-
+        console.log(payload)
         const access_token = this.jwtService.sign(payload, {
             secret: process.env.JWT_SECRET,
             expiresIn: '5m'

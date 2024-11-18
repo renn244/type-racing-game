@@ -31,6 +31,7 @@ model User {
   userinfo      Userinfo?
   preferences   UserPreferences?
   Achievements  UserAchievement[]
+  Player        Player? // this will represent you in multiplayer
 
   Biometrics UserBiometric?
   completedChallenges ChallengeCompleted[]
@@ -177,4 +178,42 @@ model UserAchievement {
 
   dateFinished  DateTime?
   @@unique([userId, achievementId])
+}
+
+model Room {
+  id        String @id @default(cuid())
+
+  name      String
+  hostId    String
+
+  players   Player[] @relation("RoomPlayers")
+  createdAt   DateTime  @default(now())
+}
+
+model Player {
+  id        String @id @default(cuid())
+  username  String 
+  
+  userId    String @unique
+  user      User   @relation(fields: [userId], references: [id])
+
+  roomId    String?
+  room      Room?  @relation("RoomPlayers", fields: [roomId], references: [id])
+
+  invitationsSent     Invitation[] @relation("Sender")
+  invitationsReceived Invitation[] @relation("Receiver")
+}
+
+model Invitation {
+  id        String @id @default(cuid())
+  roomId    String
+  senderId  String
+  receiverId String
+
+  user      Player   @relation("Sender", fields: [senderId], references: [id])
+  receiver  Player   @relation("Receiver", fields: [receiverId], references: [id])
+
+  status    String @default("pending") // 'pending', 'accepted', 'declined'
+
+  createdAt DateTime @default(now())
 }
