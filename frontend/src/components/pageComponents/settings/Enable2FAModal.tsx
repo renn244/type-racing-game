@@ -27,7 +27,7 @@ const Enable2FAModal = ({
         mutationKey: ['update2FA'],
         mutationFn: async () => {
             const response = await axiosFetch.post('/user/enable2FA', {
-                multiFA: MultiFactor
+                multiFA: !MultiFactor
             })
             
             setMultiFactor(prev => !prev)

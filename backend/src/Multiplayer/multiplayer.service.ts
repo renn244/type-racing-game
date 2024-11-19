@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { send } from 'process';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MultiplayerGateWay } from './MultiplayerGateWay.gateway';
@@ -10,21 +10,70 @@ export class MultiplayerService {
         private readonly MultiplayerGateway: MultiplayerGateWay
     ) {}
 
+    async updateRoomPlayers(roomId: string) {
+        try {
+            const room = await this.prisma.room.findUnique({
+                where: {
+                    id: roomId
+                },
+                include: {
+                    players: {
+                        include: {
+                            user: {
+                                select: {
+                                    id: true,
+                                    profile: true
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            await Promise.all(
+                room.players.map(async (currplayer) => {
+                    const socketId = await this.MultiplayerGateway.getSocketId(currplayer.user.id);
+                    if (socketId) {
+                        this.MultiplayerGateway.io.to(socketId).emit('player-joined', 
+                            room.players.map(player => (
+                                {
+                                    playerId: player.id,
+                                    roomId: room.id,
+                                    username: player.username,
+                                    profile: player.user.profile,
+                                    progress: 0
+                                }
+                            ))
+                        );
+                    }
+                })
+            );
+        } catch (error) {
+            throw new InternalServerErrorException('error updating room players');
+        }
+    }
+
     async createMultiplayerRoom(data: any, req: any) {
-        const userId = req.user.player.id;
+        const playerId = req.user.player.id;
 
         const CreateRoomTransaction = await this.prisma.$transaction(async (tprisma) => {
+            // deleting all the existing room at the time
+            await this.prisma.room.deleteMany({
+                where: {
+                    hostId: playerId
+                }
+            });
 
             const room = await tprisma.room.create({
                 data: {
                     name: data.name,
-                    hostId: userId
+                    hostId: playerId
                 }
             });
 
             const player = await tprisma.player.update({
                 where: {
-                    id: userId
+                    id: playerId
                 },
                 data: {
                     roomId: room.id
@@ -34,7 +83,42 @@ export class MultiplayerService {
             return room;
         })
 
+        await this.updateRoomPlayers(CreateRoomTransaction.id);
+
         return CreateRoomTransaction;
+    }
+
+    async joinRoom(data: { roomId: string }, req: any) {
+        const playerId = req.user.player.id;
+
+        const room = await this.prisma.room.findUnique({
+            where: {
+                id: data.roomId
+            }
+        });
+
+        if(!room) {
+            throw new NotFoundException('room not found');
+        }
+        const player = await this.prisma.player.update({
+            where: {
+                id: playerId
+            },
+            data: {
+                roomId: room.id
+            }
+        });
+
+        // just deleting the privous room
+        await this.prisma.room.deleteMany({
+            where: {
+                hostId: playerId
+            }
+        })
+
+        await this.updateRoomPlayers(room.id);
+
+        return { message: 'Successfully joined room!', roomId: room.id };
     }
 
     async sendInvite(data: { playerId, roomId }, req: any) {
@@ -108,17 +192,7 @@ export class MultiplayerService {
             }
         })
 
-        await Promise.all(
-            room.players.map(async (player) => {
-                const socketId = await this.MultiplayerGateway.getSocketId(player.id);
-                if (socketId) {
-                    this.MultiplayerGateway.io.to(socketId).emit('player-joined', {
-                        playerId,
-                        roomId: room.id
-                    });
-                }
-            })
-        );
+        await this.updateRoomPlayers(room.id);
 
         return {
             message: 'Successfully joined room!',

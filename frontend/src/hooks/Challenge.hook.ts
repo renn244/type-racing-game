@@ -7,6 +7,7 @@ import { useSearchParams } from "react-router-dom"
 type Setter<T = any> = Dispatch<SetStateAction<T>>
 
 const useChallenge = () => {
+    const [Ready, setReady] = useState<boolean>(false);
     const [timetoStart, setTimetoStart] = useState<number>(3)
     const [searchParams] = useSearchParams()
 
@@ -76,9 +77,10 @@ const useChallenge = () => {
     })
 
     useEffect(() => {
-        if(timetoStart === 0 || isLoading) {
+        if(timetoStart === 0 || isLoading || !Ready) {
             return
-        }     
+        }   
+          
         const timetoStartTimer = setTimeout(() => {
             setTimetoStart(prev => {
                 if (prev === 0) {
@@ -92,11 +94,11 @@ const useChallenge = () => {
         return () => {
             clearTimeout(timetoStartTimer)
         }
-    }, [timetoStart, isLoading])    
+    }, [timetoStart, isLoading, Ready])    
 
     return {
         calculateAccuracy, calculateWPM, handleKeyDown, SendChallengeResult, timetoStart, setTimetoStart,
-        isLoading, challengeData
+        isLoading, challengeData, setReady
     }
 }
 

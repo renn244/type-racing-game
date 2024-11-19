@@ -134,7 +134,7 @@ export class AuthService {
             createAt: user.createdAt,
             player: user.Player
         }
-        console.log(payload)
+
         const access_token = this.jwtService.sign(payload, {
             secret: process.env.JWT_SECRET,
             expiresIn: '5m'
@@ -303,6 +303,9 @@ export class AuthService {
         const user = await this.prisma.user.findFirst({
             where: {
                 id: getRefreshToken.userId
+            },
+            include: {
+                Player: true
             }
         })
 

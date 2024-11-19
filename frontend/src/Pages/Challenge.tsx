@@ -1,29 +1,36 @@
+import LoadingSpinner from "@/components/common/LoadingSpinner"
+import LoginForm from "@/components/common/LoginForm"
+import InputArea from "@/components/pageComponents/Challenge/InputArea"
+import MultiPlayerButton from "@/components/pageComponents/Challenge/MultiPlayerButton"
+import MultiPlayerProgress from "@/components/pageComponents/Challenge/MultiPlayerProgress"
+import ShowStats from "@/components/pageComponents/Challenge/ShowStats"
+import VirtualKeyboard from "@/components/pageComponents/Challenge/VirtualKeyboard"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useAuthContext } from "@/Context/AuthContext"
+import useChallenge from "@/hooks/Challenge.hook"
+import { useChallengeResult } from "@/zustand/ChallengeResult.zustand"
 import { Users } from "lucide-react"
 import { useEffect, useState } from "react"
-import useChallenge from "@/hooks/Challenge.hook"
-import LoadingSpinner from "@/components/common/LoadingSpinner"
-import VirtualKeyboard from "@/components/pageComponents/Challenge/VirtualKeyboard"
-import InputArea from "@/components/pageComponents/Challenge/InputArea"
-import { useChallengeResult } from "@/zustand/ChallengeResult.zustand"
-import ShowStats from "@/components/pageComponents/Challenge/ShowStats"
-
+import { useSearchParams } from "react-router-dom"
+ 
+type mode = "single" | "multiplayer"
 
 const Challenge = () => {
-    const [mode, setMode] = useState<"single" | "multiplayer">("single")
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [mode, setMode] = useState<mode>(searchParams.get('mode') as mode || "single") 
     const [finished, setFinished] = useState<boolean>(false)
     const [keyUp, setKeyUp] = useState('')
 
+    // Challenge Result Data
     const setWpm = useChallengeResult(state => state.setWpm)
     const setAccuracy = useChallengeResult(state => state.setAccuracy)
-
-    // Challenge Result Data
     const [time, setTime] = useState(0);
     const [typed, setTyped] = useState<string>("")
 
-    const {handleKeyDown, timetoStart, setTimetoStart, isLoading, challengeData } = useChallenge()
+    const { user } = useAuthContext()
+    const { handleKeyDown, timetoStart, setTimetoStart, isLoading, challengeData, setReady } = useChallenge()
 
     useEffect(() => {
         // the time and for listening to the keyboard 
@@ -41,14 +48,20 @@ const Challenge = () => {
         };
 
     }, [challengeData?.challenge, finished, timetoStart])
-    
 
+    const setmode = (mode: mode) => {
+        setMode(mode);
+        // to 
+        const prevParams = Object.fromEntries(searchParams.entries());
+        setSearchParams({...prevParams, mode: mode })
+    }
+    
     return (
         <div>
             <div className="min-h-[750px] bg-background p-6">
                 <div className="container mx-auto max--w-5xl">
                     {/* Tab for multiplayer and single player */}
-                    <Tabs defaultValue={mode} onValueChange={(value) => setMode(value as "single" | "multiplayer")} className="mb-6">
+                    <Tabs value={mode} onValueChange={(value) => setmode(value as mode)} className="mb-6">
                         <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
                             <TabsTrigger value="single">Single Player</TabsTrigger>
                             <TabsTrigger value="multiplayer">MultiPlayer</TabsTrigger>
@@ -59,27 +72,16 @@ const Challenge = () => {
 
                     {/* Multiplayer Progress */}
                     {mode === "multiplayer" && (
-                        <Card className="mb-6">
-                            <CardContent className="p-4">
-                                <div className="space-y-4">
-                                    {/* {[1,2,3,4].map(competitor => (
-                                        <div key={competitor.id} className="space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center space-x-2">
-                                                    <Avatar className="h-6 w-6">
-                                                    <AvatarImage src={competitor.avatar} />
-                                                    <AvatarFallback>{competitor.name[0]}</AvatarFallback>
-                                                    </Avatar>
-                                                    <span className="font-medium">{competitor.name}</span>
-                                                </div>
-                                                <Badge variant="secondary">{competitor.wpm} WPM</Badge>
-                                            </div>
-                                            <Progress value={competitor.progress} className="h-2" />
-                                        </div>
-                                    ))} */}
-                                </div>
-                            </CardContent>
-                        </Card>
+                        <MultiPlayerProgress setReady={setReady} />
+                    )}
+
+                    {/* Making sure if in Multiplayer that the player is logined */}
+                    {(mode === "multiplayer" && user === undefined)  && (
+                        <div className="z-50 fixed h-screen flex justify-center items-center w-full top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
+                            <div onClick={() => setmode('single')}
+                            className="bg-muted-foreground h-screen w-full absolute z-40 opacity-45"></div>
+                            <LoginForm redirectTo={window.location.href} description="You need to Login in order to play in our multiplayer game!" className={'z-50'} />
+                        </div>
                     )}
 
                     {/* Challenge */}
@@ -116,30 +118,30 @@ const Challenge = () => {
                     <VirtualKeyboard   keyUp={keyUp} timetoStart={timetoStart} />
 
                     {/* Action Buttons */}
-                    <div className="flex justify-center gap-4 mt-6">
-                        <Button 
-                        onFocus={(e) => e.target.blur()} // so that after being click will not be reclick when space are push
-                        onClick={() => {
-                            setTime(0)
-                            setAccuracy(0)
-                            setWpm(0)
-                            setTyped('')
-                            setFinished(false)
-                            setTimetoStart(3)
-                        }}
-                        variant="outline" className="w-32">
-                            Restart
-                        </Button>
-                        <Button variant="outline" className="w-32">
-                            Give Up
-                        </Button>
-                        {mode === 'multiplayer' && (
-                            <Button className="w-32">
-                                <Users className="mr-2 h-4 w-4" />
-                                    Invite
+                        {mode === "single" && (
+                        <div className="flex justify-center gap-4 mt-6">
+                            <Button 
+                            
+                            onFocus={(e) => e.target.blur()} // so that after being click will not be reclick when space are push
+                            onClick={() => {
+                                setTime(0)
+                                setAccuracy(0)
+                                setWpm(0)
+                                setTyped('')
+                                setFinished(false)
+                                setTimetoStart(3)
+                            }}
+                            variant="outline" className="w-32">
+                                Restart
                             </Button>
+                            <Button variant="outline" className="w-32">
+                                Give Up
+                            </Button>
+                        </div>
                         )}
-                    </div>
+                        {mode === 'multiplayer' && (
+                            <MultiPlayerButton />
+                        )}
                 </div>
             </div>
         </div>
