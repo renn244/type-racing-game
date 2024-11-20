@@ -121,14 +121,31 @@ export class MultiplayerService {
         return { message: 'Successfully joined room!', roomId: room.id };
     }
 
-    async sendInvite(data: { playerId, roomId }, req: any) {
+    async sendInvite(data: { username, roomId }, req: any) {
+
+        const getPlayer = await this.prisma.user.findFirst({
+            where: {
+                username: data.username
+            },
+            include: {
+                Player: true
+            }
+        })
+
+        if(!getPlayer) {
+            throw new NotFoundException({
+                name: 'user',
+                message: 'username does not exist!'
+            });
+        }
+
         const playerId = req.user.player.id; // add later
 
         const existingInvite = await this.prisma.invitation.findFirst({
             where: {
                 roomId: data.roomId,
                 senderId: playerId,
-                receiverId: data.playerId,
+                receiverId: getPlayer.Player.id,
                 status: 'pending'
                 // maybe impleemt date check to further check if spamming invite?
             }
@@ -142,12 +159,12 @@ export class MultiplayerService {
             data: {
                 roomId: data.roomId,
                 senderId: playerId,
-                receiverId: data.playerId
+                receiverId: getPlayer.Player.id
             }
         })
 
         // for notifications
-        const receiverSocketId = await this.MultiplayerGateway.getSocketId(data.playerId);
+        const receiverSocketId = await this.MultiplayerGateway.getSocketId(getPlayer.id);
         if(receiverSocketId) {
             this.MultiplayerGateway.io.to(receiverSocketId).emit('invitation', {
                 roomId: data.roomId,

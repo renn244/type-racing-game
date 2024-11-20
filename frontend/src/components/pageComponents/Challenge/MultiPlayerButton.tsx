@@ -9,9 +9,15 @@ import toast from "react-hot-toast"
 import { useSearchParams } from "react-router-dom"
 
 const MultiPlayerButton = () => {
+
+    // buttons for all dialogs
+    const [joinDialogOpen, setJoinDialogOpen] = useState(false)
+    const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
+
     const [searchParams, setSearchParams] = useSearchParams();
-    const [invitePlayerId, setInvitePlayerId] = useState<string>('')
+    const [usernameInvite, setUsernameInvite] = useState<string>('')
     const [roomId, setRoomId] = useState<string>('')
+    const initialRoomId = searchParams.get('roomId') || '';
 
     const { mutate: Ready, isPending: isPendingReady } = useMutation({
         mutationKey: ['Ready'],
@@ -37,8 +43,10 @@ const MultiPlayerButton = () => {
             // changing the search Params
             const prevParams = Object.fromEntries(searchParams.entries());
             setSearchParams({...prevParams, roomId: roomId })
+            setInviteDialogOpen(false)
+            setRoomId('')
 
-            return 
+            return toast.success('Joined Room!') 
         }
     })
 
@@ -46,15 +54,18 @@ const MultiPlayerButton = () => {
         mutationKey: ['Invite'],
         mutationFn: async () => {
             const response = await axiosFetch.post('/multiplayer/sendInvite', {
-                roomId: roomId,
-                playerId: 'playerId' // add later
+                roomId: initialRoomId,
+                username: usernameInvite // add later
             })
             
             if(response.status >= 400) {
                 // handle error
-                toast.error('Error sending invite')
+                toast.error(response.data.message)
                 return
             }
+
+            setInviteDialogOpen(false)
+            setUsernameInvite('')
 
             return toast.success('Invite sent!')
         }
@@ -72,7 +83,7 @@ const MultiPlayerButton = () => {
                 Ready
             </Button>
 
-            <Dialog>
+            <Dialog open={joinDialogOpen} onOpenChange={setJoinDialogOpen}>
                 <DialogTrigger asChild>
                     <Button 
                     disabled={isPendingJoin}
@@ -102,11 +113,9 @@ const MultiPlayerButton = () => {
                 </DialogContent>
             </Dialog>
 
-            <Dialog>
+            <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
                 <DialogTrigger asChild>
                     <Button 
-                    disabled={isPendingInvite}
-                    onClick={() => Invite()}
                     className="w-32">
                         <Users className="mr-2 h-4 w-4" />
                         Invite
@@ -123,9 +132,10 @@ const MultiPlayerButton = () => {
                     </DialogHeader>
                     <div>
                         {/* form */}
-                        <Input value={invitePlayerId} onChange={(e) => setInvitePlayerId(e.target.value)} placeholder="Player Id" />
+                        <Input value={usernameInvite} onChange={(e) => setUsernameInvite(e.target.value)} placeholder="username" />
                         <Button
-                        disabled={isPendingInvite}
+                        onClick={() => Invite()}
+                        disabled={isPendingInvite || !usernameInvite}
                         className="w-32 my-3">
                             Invite
                         </Button>

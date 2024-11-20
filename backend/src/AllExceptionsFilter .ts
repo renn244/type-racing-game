@@ -27,6 +27,7 @@ export class AllExceptionFilter implements ExceptionFilter {
             } else if (typeof exceptionResponse === 'string') {
                 message = exceptionResponse;
             }
+            
         } else {
             this.logger.error('Unhandled Exception:', exception);
             message = exception.message || 'Unexpected error';

@@ -24,7 +24,7 @@ export class MultiplayerController {
 
     @UseGuards(JwtAuthGuard)
     @Post('sendInvite')
-    async sendInvite(@Body() data: { playerId, roomId }, @Request() req: any) {
+    async sendInvite(@Body() data: { username, roomId }, @Request() req: any) {
         return this.multiplayerService.sendInvite(data, req);
     }
 

@@ -51,9 +51,9 @@ const Challenge = () => {
 
     const setmode = (mode: mode) => {
         setMode(mode);
-        // to 
         const prevParams = Object.fromEntries(searchParams.entries());
         setSearchParams({...prevParams, mode: mode })
+        setTimetoStart(3);
     }
     
     return (

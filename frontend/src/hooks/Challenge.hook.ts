@@ -77,7 +77,7 @@ const useChallenge = () => {
     })
 
     useEffect(() => {
-        if(timetoStart === 0 || isLoading || !Ready) {
+        if(timetoStart === 0 || isLoading || (!Ready && searchParams.get('mode') === 'multiplayer')) {
             return
         }   
           
@@ -94,7 +94,7 @@ const useChallenge = () => {
         return () => {
             clearTimeout(timetoStartTimer)
         }
-    }, [timetoStart, isLoading, Ready])    
+    }, [timetoStart, isLoading, Ready, searchParams.get('mode')])    
 
     return {
         calculateAccuracy, calculateWPM, handleKeyDown, SendChallengeResult, timetoStart, setTimetoStart,

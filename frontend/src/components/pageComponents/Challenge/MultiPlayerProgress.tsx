@@ -52,6 +52,10 @@ const MultiPlayerProgress = ({
             })
         })
 
+        socket.on('invitation', async data => {
+            console.log(data)
+        })
+
         // just creating a room if there is no room yet
         const createRoom = async () => {
             if(searchParams.get('roomId')) return;
