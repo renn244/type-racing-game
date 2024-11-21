@@ -13,7 +13,7 @@ export class AllExceptionFilter implements ExceptionFilter {
 
         let status = 500;
         let message = 'Unexpected Error';
-        let name = 'Error';
+        let name = 'Internal Server Error';
 
         if (exception instanceof HttpException) {
             const exceptionResponse = exception.getResponse();

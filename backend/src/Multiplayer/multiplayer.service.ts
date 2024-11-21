@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException, NotFoundException } from '@ne
 import { send } from 'process';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MultiplayerGateWay } from './MultiplayerGateWay.gateway';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class MultiplayerService {
@@ -66,6 +67,7 @@ export class MultiplayerService {
 
             const room = await tprisma.room.create({
                 data: {
+                    challengeId: data.challengeId,
                     name: data.name,
                     hostId: playerId
                 }
@@ -118,7 +120,7 @@ export class MultiplayerService {
 
         await this.updateRoomPlayers(room.id);
 
-        return { message: 'Successfully joined room!', roomId: room.id };
+        return { message: 'Successfully joined room!', challengeId: room.challengeId , roomId: room.id };
     }
 
     async sendInvite(data: { username, roomId }, req: any) {
@@ -160,60 +162,76 @@ export class MultiplayerService {
                 roomId: data.roomId,
                 senderId: playerId,
                 receiverId: getPlayer.Player.id
+            },
+            include: {
+                user: true // this is the one who is sending the invite
             }
         })
 
         // for notifications
         const receiverSocketId = await this.MultiplayerGateway.getSocketId(getPlayer.id);
         if(receiverSocketId) {
-            this.MultiplayerGateway.io.to(receiverSocketId).emit('invitation', {
-                roomId: data.roomId,
-                senderId: playerId
-            })
+            this.MultiplayerGateway.io.to(receiverSocketId).emit('invitation', invite)
         }
 
         return { message: 'Successfully sent invite!', invite };
     }
 
     async acceptInvite(inviteId: string, req: any) {
-        const playerId = req.user.player.id;
+        try {
+            const playerId = req.user.player.id;
 
-        const invite = await this.prisma.invitation.update({
-            where: {
-                id: inviteId
-            },
-            data: {
-                status: 'accepted'
+            const invite = await this.prisma.invitation.update({
+                where: {
+                    id: inviteId
+                },
+                data: {
+                    status: 'accepted'
+                }
+            })
+
+            return this.joinRoom({ roomId: invite.roomId }, req);
+
+        } catch (error) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2025') {
+                    throw new NotFoundException('invite not found');
+                }
             }
-        })
-
-        const room = await this.prisma.room.findUnique({
-            where: {
-                id: invite.roomId
-            },
-            include: {
-                players: true
-            }
-        })
-
-        if(!room) {
-            throw new NotFoundException('room not found');
+            throw new InternalServerErrorException('error accepting invite');
         }
+    }
 
-        const playerJoin = await this.prisma.player.update({
-            where: {
-                id: req.user.player.id
-            },
-            data: {
-                roomId: room.id
+    async rejectInvite(inviteId: string) {
+       try {
+            const invite = await this.prisma.invitation.update({
+                where: {
+                    id: inviteId
+                },
+                data: {
+                    status: 'rejected'
+                }, include: {
+                    user: true, // sender of the invite
+                    receiver: true
+                }
+            })
+
+            // for notifications
+            const senderSocketId = await this.MultiplayerGateway.getSocketId(invite.user.userId);
+            if(senderSocketId) {
+                this.MultiplayerGateway.io.to(senderSocketId).emit('invitation-rejected', `invitation rejected by ${invite.receiver.username}`);
             }
-        })
-
-        await this.updateRoomPlayers(room.id);
-
-        return {
-            message: 'Successfully joined room!',
-            roomId: room.id
-        }
+            
+            return {
+                message: 'Successfully rejected invite!'
+            }
+       } catch (error) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError) {
+              if (error.code === 'P2025') {
+                   throw new NotFoundException('invite not found');
+              }
+            }
+            throw new InternalServerErrorException('error rejecting invite');
+       }
     }
 }

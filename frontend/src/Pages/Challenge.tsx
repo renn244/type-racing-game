@@ -115,7 +115,7 @@ const Challenge = () => {
 
                     <InputArea typed={typed} />
 
-                    <VirtualKeyboard   keyUp={keyUp} timetoStart={timetoStart} />
+                    <VirtualKeyboard keyUp={keyUp} timetoStart={timetoStart} />
 
                     {/* Action Buttons */}
                         {mode === "single" && (

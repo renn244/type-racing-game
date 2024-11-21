@@ -33,4 +33,10 @@ export class MultiplayerController {
     async acceptInvite(@Body() data: { inviteId }, @Request() req: any) {
         return this.multiplayerService.acceptInvite(data.inviteId, req);
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('rejectInvite')
+    async rejectInvite(@Body() data: { inviteId }) {
+        return this.multiplayerService.rejectInvite(data.inviteId);
+    }
 }

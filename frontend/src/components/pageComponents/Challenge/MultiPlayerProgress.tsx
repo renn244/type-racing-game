@@ -2,6 +2,7 @@ import { AvatarFallback, AvatarImage, Avatar } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { useAuthContext } from "@/Context/AuthContext"
+import { useSocketContext } from "@/Context/SocketContext"
 import axiosFetch from "@/lib/axiosFetch"
 import { Dispatch, memo, SetStateAction, useEffect, useState } from "react"
 import toast from "react-hot-toast"
@@ -26,24 +27,14 @@ const MultiPlayerProgress = ({
     const [searchParams, setSearchParams] = useSearchParams();
     const [progress, setProgress] = useState<PlayerProgress[]>([])
     const { user } = useAuthContext()
-
+    const { socket } = useSocketContext();
     // if you refresh the page the progress will be lost // bug
 
     useEffect(() => {
         if (!user) return setReady(false)
-
-        const socket = io(`http://localhost:5000`, {
-            autoConnect: true,
-            transports: ['websocket', 'polling'],
-            query: {
-                userId: user.id
-            }
-        })
-
-        socket.on('connect', () => {
-            console.log('connected')
-        })
-
+        
+        // remove this socket and use the socket context
+        if(!socket) return;
         socket.on('player-joined', async data => {
             setProgress([]) // clearing the progress to prevent duplicate
 
@@ -52,14 +43,16 @@ const MultiPlayerProgress = ({
             })
         })
 
-        socket.on('invitation', async data => {
+        socket.on('invitation-rejected', async (data: string) => {
             console.log(data)
+            toast.error(data)
         })
 
         // just creating a room if there is no room yet
         const createRoom = async () => {
             if(searchParams.get('roomId')) return;
-            const res = await axiosFetch.post('/multiplayer/createRoom', { 
+            const res = await axiosFetch.post('/multiplayer/createRoom', {
+                challengeId: searchParams.get('challengeId'),
                 name: 'room name'
             })
 
@@ -75,9 +68,10 @@ const MultiPlayerProgress = ({
         createRoom();
 
         return () => {
-
+            socket.off('player-joined')
+            socket.off('invitation-rejected')
         }
-    }, [])
+    }, [socket])
 
     return (
         <Card className="mb-6">

@@ -12,11 +12,11 @@ import { Link } from 'react-router-dom'
 import UserDashboard from './Pages/UserDashboard'
 import Challenges from './Pages/Challenges'
 import Settings from './Pages/Settings'
-import Profile from './Pages/Profile'
 import AddGlobalAchievement from './Pages/adminDashboard/Achievement/AddGlobalAchievement'
 import AdminGlobalAchievement from './Pages/adminDashboard/Achievement/AdminGlobalAchievement'
 import MultiFa from './Pages/MultiFa'
-
+import Profile from './Pages/Profile'
+import InvitationNofitication from './components/common/InvitationNofitication'
 
 function App() {
   const { user, loading } = useAuthContext()
@@ -27,7 +27,7 @@ function App() {
 
   return (
     <div className='w-full min-h-screen bg-background'>
-      
+      <InvitationNofitication />
       <NavBar />
       
       <Routes>

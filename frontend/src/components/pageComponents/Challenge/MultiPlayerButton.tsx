@@ -42,7 +42,7 @@ const MultiPlayerButton = () => {
 
             // changing the search Params
             const prevParams = Object.fromEntries(searchParams.entries());
-            setSearchParams({...prevParams, roomId: roomId })
+            setSearchParams({...prevParams, roomId: roomId, mode: 'multiplayer', challengeId: response.data.challengeId })
             setInviteDialogOpen(false)
             setRoomId('')
 

@@ -71,7 +71,7 @@ const useChallenge = () => {
     }
 
     const { data: challengeData, isLoading } = useQuery({
-        queryKey: ['challenge'],
+        queryKey: ['challenge', searchParams.get('challengeId')],
         queryFn: async () => getChallenge(searchParams.get('challengeId') || ''),
         refetchOnWindowFocus: false
     })
