@@ -119,7 +119,7 @@ const Challenge = () => {
                         </CardContent>
                     </Card>
 
-                    <InputArea typed={typed} />
+                    <InputArea challenge={challengeData?.challenge} typed={typed} />
 
                     <VirtualKeyboard keyUp={keyUp} timetoStart={timetoStart} />
 

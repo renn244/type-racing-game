@@ -229,7 +229,8 @@ export class AuthService {
                     profile: true,
                     email: true,
                     userinfo: true,
-                    preferences: true
+                    preferences: true,
+                    Player: true,
                 },
             })
 

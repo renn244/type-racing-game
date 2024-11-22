@@ -28,9 +28,19 @@ export type User = {
     preferences: UserPreference,
     Biometrics: UserBiometric
     userinfo: Userinfo,
+    Player: Player,
 
     createdAt: string,
     updatedAt: string
+}
+
+export type Player = {
+    id: string,
+    username: string,
+    Ready?: boolean,
+
+    userId: string,
+    roomId: string,
 }
 
 export type UserProfile = {

@@ -53,9 +53,7 @@ const MultiPlayerProgress = () => {
         socket.on('update-playerLobby', async data => {
             setProgress([]) // clearing the progress to prevent duplicate
 
-            data.map((player: PlayerProgress) => {
-                setProgress(prev => [...prev, player])
-            })
+            setProgress(data)
         })
 
         socket.on('invitation-rejected', async (data: string) => {
@@ -63,8 +61,19 @@ const MultiPlayerProgress = () => {
         })
 
         socket.on('game-started', async data => {
-            console.log(data)
             setGameStarted(true)
+        })
+
+        // FIX LATER: this would slow down the app client
+        socket.on('player-progress-update', async data => {
+            setProgress(prev => prev.map(player => {
+                if(player.playerId === data.playerId) {
+                    console.log(progress)
+                    return {...player, progress: data.progress}
+                }
+
+                return player
+            }))
         })
 
         // just creating a room if there is no room yet
