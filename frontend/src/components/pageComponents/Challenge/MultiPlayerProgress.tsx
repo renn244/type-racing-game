@@ -4,10 +4,11 @@ import { Progress } from "@/components/ui/progress"
 import { useAuthContext } from "@/Context/AuthContext"
 import { useSocketContext } from "@/Context/SocketContext"
 import axiosFetch from "@/lib/axiosFetch"
+import { useMultiplayer } from "@/zustand/ChallengeResult.zustand"
+import { useQuery } from "@tanstack/react-query"
 import { Dispatch, memo, SetStateAction, useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { useSearchParams } from "react-router-dom"
-import { io } from "socket.io-client"
 
 type PlayerProgress = {
     progress: number,
@@ -15,27 +16,41 @@ type PlayerProgress = {
     roomId: string,
     username: string,
     profile: string,
+    Ready: boolean
 }
 
-type MultiPlayerProgressProps = {
-    setReady: Dispatch<SetStateAction<boolean>>
-}
 
-const MultiPlayerProgress = ({
-    setReady
-}: MultiPlayerProgressProps) => {
+const MultiPlayerProgress = () => {
     const [searchParams, setSearchParams] = useSearchParams();
+    const roomId = searchParams.get('roomId')
     const [progress, setProgress] = useState<PlayerProgress[]>([])
     const { user } = useAuthContext()
     const { socket } = useSocketContext();
-    // if you refresh the page the progress will be lost // bug
+    const setGameStarted = useMultiplayer(set => set.setGameStarted);
+
+    const { data: players } = useQuery({
+        queryKey: ['room-players', searchParams.get('roomId')],
+        queryFn: async () => {
+            if(!roomId) return;
+            const response = await axiosFetch.get(`/multiplayer/roomPlayers?roomId=${roomId}`)
+
+            if(response.status >= 400) {
+                toast.error(response.data.message)
+            }
+
+            setProgress(response.data)
+
+            return response.data
+        }
+    })
 
     useEffect(() => {
-        if (!user) return setReady(false)
+        if (!user) return 
         
         // remove this socket and use the socket context
         if(!socket) return;
-        socket.on('player-joined', async data => {
+
+        socket.on('update-playerLobby', async data => {
             setProgress([]) // clearing the progress to prevent duplicate
 
             data.map((player: PlayerProgress) => {
@@ -44,8 +59,12 @@ const MultiPlayerProgress = ({
         })
 
         socket.on('invitation-rejected', async (data: string) => {
-            console.log(data)
             toast.error(data)
+        })
+
+        socket.on('game-started', async data => {
+            console.log(data)
+            setGameStarted(true)
         })
 
         // just creating a room if there is no room yet
@@ -70,6 +89,7 @@ const MultiPlayerProgress = ({
         return () => {
             socket.off('player-joined')
             socket.off('invitation-rejected')
+            socket.off('game-started')
         }
     }, [socket])
 
@@ -78,7 +98,7 @@ const MultiPlayerProgress = ({
             <CardContent className="p-4">
                 Room Id: {searchParams.get('roomId')}
                 <div className="space-y-4 p-3">
-                    {progress.map(competitor => (
+                    {progress?.map(competitor => (
                         <div key={competitor.playerId} className="space-y-2">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
@@ -87,6 +107,8 @@ const MultiPlayerProgress = ({
                                     <AvatarFallback>{competitor.username}</AvatarFallback>
                                     </Avatar>
                                     <span className="font-medium">{competitor.username}</span>
+                                    <span className="text-muted-foreground">•</span>
+                                    <span className={`font-bold ${competitor.Ready ? "text-green-700" : "text-red-700"}`}>{competitor.Ready ? "Ready" : "Not Ready" }</span>
                                 </div>
                             </div>
                             <Progress value={competitor.progress} className="h-2" />

@@ -16,13 +16,25 @@ const MultiPlayerButton = () => {
 
     const [searchParams, setSearchParams] = useSearchParams();
     const [usernameInvite, setUsernameInvite] = useState<string>('')
+    const [ready, setReady] = useState<boolean>(searchParams.get('Ready') === 'true' || false) // this is the current player ready status
     const [roomId, setRoomId] = useState<string>('')
     const initialRoomId = searchParams.get('roomId') || '';
 
     const { mutate: Ready, isPending: isPendingReady } = useMutation({
         mutationKey: ['Ready'],
         mutationFn: async () => {
-            // do something
+            const response = await axiosFetch.post('/multiplayer/playerReady', {
+                Ready: !ready
+            })
+
+            if(response.status >= 400) {
+                // handle error
+                toast.error('Error setting ready')
+                return
+            }
+
+            setSearchParams({...Object.fromEntries(searchParams.entries()), Ready: (!ready).toString() })
+            setReady(!ready)
             return 
         }
     })
@@ -80,7 +92,7 @@ const MultiPlayerButton = () => {
             onFocus={(e) => e.target.blur()} // so that after being click will not be reclick when space are push
             onClick={() => Ready()}
             className="w-32">
-                Ready
+                {ready ? "Unready" : "Ready" }
             </Button>
 
             <Dialog open={joinDialogOpen} onOpenChange={setJoinDialogOpen}>

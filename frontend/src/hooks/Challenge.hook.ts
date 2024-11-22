@@ -1,5 +1,6 @@
 import axiosFetch from "@/lib/axiosFetch"
 import { Challenge, ChallengeResultData } from "@/types/Challenge.type"
+import { useMultiplayer } from "@/zustand/ChallengeResult.zustand"
 import { useQuery } from "@tanstack/react-query"
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { useSearchParams } from "react-router-dom"
@@ -7,7 +8,7 @@ import { useSearchParams } from "react-router-dom"
 type Setter<T = any> = Dispatch<SetStateAction<T>>
 
 const useChallenge = () => {
-    const [Ready, setReady] = useState<boolean>(false);
+    const GameStarted = useMultiplayer(state => state.GameStarted) // this is use for multiplayer
     const [timetoStart, setTimetoStart] = useState<number>(3)
     const [searchParams] = useSearchParams()
 
@@ -77,7 +78,7 @@ const useChallenge = () => {
     })
 
     useEffect(() => {
-        if(timetoStart === 0 || isLoading || (!Ready && searchParams.get('mode') === 'multiplayer')) {
+        if(timetoStart === 0 || isLoading || (!GameStarted && searchParams.get('mode') === 'multiplayer')) {
             return
         }   
           
@@ -94,11 +95,11 @@ const useChallenge = () => {
         return () => {
             clearTimeout(timetoStartTimer)
         }
-    }, [timetoStart, isLoading, Ready, searchParams.get('mode')])    
+    }, [timetoStart, isLoading, GameStarted, searchParams.get('mode')])    
 
     return {
         calculateAccuracy, calculateWPM, handleKeyDown, SendChallengeResult, timetoStart, setTimetoStart,
-        isLoading, challengeData, setReady
+        isLoading, challengeData
     }
 }
 

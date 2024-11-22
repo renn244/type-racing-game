@@ -183,6 +183,7 @@ model UserAchievement {
 model Room {
   id          String @id @default(cuid())
   challengeId String
+  roomStatus  String @default("waiting") // 'waiting', 'playing', 'finished'
 
   name        String
   hostId      String
@@ -193,7 +194,8 @@ model Room {
 
 model Player {
   id        String @id @default(cuid())
-  username  String 
+  username  String
+  Ready     Boolean? @default(false)
   
   userId    String @unique
   user      User   @relation(fields: [userId], references: [id])

@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { MultiplayerService } from './multiplayer.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
@@ -7,6 +7,12 @@ export class MultiplayerController {
     constructor(
         private readonly multiplayerService: MultiplayerService
     ) {}
+
+    @UseGuards()
+    @Get('roomPlayers')
+    async getRoomPlayers(@Request() req: any, @Query('roomId') roomId: string) {
+        return this.multiplayerService.getRoomPlayers(roomId);
+    }
 
     @UseGuards(JwtAuthGuard)
     @Post('createRoom')
@@ -38,5 +44,11 @@ export class MultiplayerController {
     @Post('rejectInvite')
     async rejectInvite(@Body() data: { inviteId }) {
         return this.multiplayerService.rejectInvite(data.inviteId);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('playerReady')
+    async playerReady(@Request() req: any, @Body() data: { Ready: boolean }) {
+        return this.multiplayerService.playerReady(req, data);
     }
 }

@@ -35,14 +35,15 @@ export class MultiplayerService {
                 room.players.map(async (currplayer) => {
                     const socketId = await this.MultiplayerGateway.getSocketId(currplayer.user.id);
                     if (socketId) {
-                        this.MultiplayerGateway.io.to(socketId).emit('player-joined', 
+                        this.MultiplayerGateway.io.to(socketId).emit('update-playerLobby', 
                             room.players.map(player => (
                                 {
                                     playerId: player.id,
                                     roomId: room.id,
                                     username: player.username,
                                     profile: player.user.profile,
-                                    progress: 0
+                                    progress: 0,
+                                    Ready: player.Ready
                                 }
                             ))
                         );
@@ -51,6 +52,46 @@ export class MultiplayerService {
             );
         } catch (error) {
             throw new InternalServerErrorException('error updating room players');
+        }
+    }
+
+    async getRoomPlayers(roomId: string) {
+        try {
+            // maybe check if he is part of the room?
+            const room = await this.prisma.room.findUnique({
+                where: {
+                    id: roomId
+                },
+                include: {
+                    players: {
+                        include: {
+                            user: {
+                                select: {
+                                    id: true,
+                                    profile: true
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            if(!room) {
+                throw new NotFoundException('room not found');
+            }
+
+            return room.players.map(player => (
+                {
+                    playerId: player.id,
+                    roomId: room.id,
+                    username: player.username,
+                    profile: player.user.profile,
+                    progress: 0,
+                    Ready: player.Ready
+                }
+            ))
+        } catch {
+            throw new InternalServerErrorException("error try refreshing the page!")
         }
     }
 
@@ -78,7 +119,8 @@ export class MultiplayerService {
                     id: playerId
                 },
                 data: {
-                    roomId: room.id
+                    roomId: room.id,
+                    Ready: false
                 }
             });
 
@@ -107,7 +149,8 @@ export class MultiplayerService {
                 id: playerId
             },
             data: {
-                roomId: room.id
+                roomId: room.id,
+                Ready: false, // setting ready as false
             }
         });
 
@@ -234,4 +277,67 @@ export class MultiplayerService {
             throw new InternalServerErrorException('error rejecting invite');
        }
     }
-}
+
+    async playerReady(req: any, data: { Ready: boolean }) {
+        const playerId = req.user.player.id;
+        const updatePlayer = await this.prisma.player.update({
+            where: {
+                id: playerId
+            },
+            data: {
+                Ready: data.Ready
+            }
+        })
+
+        await this.updateRoomPlayers(updatePlayer.roomId);
+
+        // check if all the players are ready and then use the socket to start the game
+        const room = await this.prisma.room.findUnique({
+            where: {
+                id: updatePlayer.roomId
+            },
+            include: {
+                players: {
+                    select: {
+                        Ready: true
+                    }
+                }
+            }
+        });
+
+        const allReady = room.players.every(player => player.Ready === true);
+        const roomPlayerCount = room.players.length;
+
+        if (allReady && roomPlayerCount > 1) {
+
+            const updateGameStatus = await this.prisma.room.update({
+                where: {
+                    id: updatePlayer.roomId
+                },
+                data: {
+                    roomStatus: 'started'
+                },
+                // getting the users to send that the game has started
+                include: {
+                    players: {
+                        select: {
+                            user: true
+                        }
+                    }
+                }
+            })
+
+            // send the start signal to all the players
+            await Promise.all(
+                updateGameStatus.players.map(async player => {
+                    const socketId = await this.MultiplayerGateway.getSocketId(player.user.id);
+                    if (socketId) {
+                        this.MultiplayerGateway.io.to(socketId).emit('game-started', updateGameStatus);
+                    }
+                })
+            );
+        }
+
+        return { message: "player is ready"};
+    }
+}   

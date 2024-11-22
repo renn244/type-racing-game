@@ -26,3 +26,21 @@ export const useChallengeResult = create<State & Actions>(set => ({
     setTime: (time: number) => set({ time }),
 }))
 
+// this is the multiplayer zustand
+type StateMultiplayer = {
+    Ready: boolean,
+    GameStarted: boolean
+}
+
+type ActionMultiplayer = {
+    setReady: (ready: boolean) => void
+    setGameStarted: (started: boolean) => void
+}
+
+export const useMultiplayer = create<StateMultiplayer & ActionMultiplayer>(set => ({
+    Ready: false,
+    GameStarted: false,
+    setReady: (ready: boolean) => set({ Ready: ready }),
+    setGameStarted: (started: boolean) => set({ GameStarted: started })
+}))
+

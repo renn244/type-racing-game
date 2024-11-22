@@ -8,6 +8,8 @@ import { useMutation } from '@tanstack/react-query'
 import axiosFetch from '@/lib/axiosFetch'
 import toast from 'react-hot-toast'
 import LoadingSpinner from './LoadingSpinner'
+import notificationSound from '@/lib/notificationSound'
+
 
 const InvitationNofitication = () => {
     const [invitation, setInvitation] = useState<InvitationNotification | undefined>(undefined)
@@ -18,7 +20,7 @@ const InvitationNofitication = () => {
   
       socket.on('invitation', async (data: InvitationNotification) => {
         setInvitation(data)
-        console.log(data)
+        notificationSound()
       })
   
   
