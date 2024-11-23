@@ -1,3 +1,4 @@
+import LoadingSpinner from "@/components/common/LoadingSpinner"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -21,6 +22,25 @@ const MultiPlayerButton = () => {
     const [roomId, setRoomId] = useState<string>('')
     const initialRoomId = searchParams.get('roomId') || '';
     const gameStarted = useMultiplayer(state => state.GameStarted)
+
+    const { mutate: Leave, isPending: isPendingLeave } = useMutation({
+        mutationKey: ['Leave'],
+        mutationFn: async () => {
+            const response = await axiosFetch.patch('/multiplayer/LeaveRoom', {
+                roomId: initialRoomId
+            })
+
+            if(response.status >= 400) {
+                // handle error
+                toast.error('Error leaving room')
+                return
+            }
+
+            setSearchParams({...Object.fromEntries(searchParams.entries()), roomId: '', mode: 'single' })
+            window.location.reload()
+            return toast.success('Left Room!')
+        }
+    })
 
     const { mutate: Ready, isPending: isPendingReady } = useMutation({
         mutationKey: ['Ready'],
@@ -156,6 +176,13 @@ const MultiPlayerButton = () => {
                     </div>
                 </DialogContent>
             </Dialog>
+
+            <Button
+            disabled={isPendingLeave || gameStarted}
+            onClick={() => Leave()}
+            className="w-32">
+                {isPendingLeave ? <LoadingSpinner /> : "Leave"}
+            </Button>
         </div>
     )
 }

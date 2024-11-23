@@ -69,6 +69,7 @@ const Challenge = () => {
         setSearchParams({...prevParams, mode: mode })
         
         // reset the challenge
+        setFinished(false)
         setWpm(0)
         setAccuracy(0)
         setTyped('')

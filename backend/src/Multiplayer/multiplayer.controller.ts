@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { MultiplayerService } from './multiplayer.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
@@ -51,4 +51,11 @@ export class MultiplayerController {
     async playerReady(@Request() req: any, @Body() data: { Ready: boolean }) {
         return this.multiplayerService.playerReady(req, data);
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Patch('LeaveRoom')
+    async leaveRoom(@Request() req: any) {
+        return this.multiplayerService.leaveRoom(req);
+    }
+
 }

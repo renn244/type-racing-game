@@ -30,6 +30,8 @@ export class MultiplayerService {
                 }
             });
 
+            if(!room) return
+
             await Promise.all(
                 room.players.map(async (currplayer) => {
                     const socketId = await this.MultiplayerGateway.getSocketId(currplayer.user.id);
@@ -343,5 +345,67 @@ export class MultiplayerService {
         }
 
         return { message: "player is ready"};
+    }
+
+    async leaveRoom(req: any) {
+        const playerId = req.user.player.id;
+        const player = await this.prisma.player.findUnique({
+            where: {
+                id: playerId
+            }
+        });
+
+        if(!player) {
+            throw new NotFoundException('player not found');
+        }
+
+        const room = await this.prisma.room.findUnique({
+            where: {
+                id: player.roomId
+            },
+            include: {
+                players: true
+            }
+        });
+
+        if(!room) {
+            throw new NotFoundException('room not found');
+        }
+
+        if(room.hostId === playerId && room.players.length > 1) {
+            console.log('host is leaving');
+            // if the host is leaving then the room is deleted
+            await this.prisma.room.update({
+                where: {
+                    id: room.id
+                },
+                data: {
+                    hostId: room.players[1].id
+                }
+            });
+        } else if(room.hostId === playerId) { 
+            console.log('host is leaving');
+            // if the host is leaving and he is the only one then the room is deleted
+            await this.prisma.room.delete({
+                where: {
+                    id: room.id
+                }
+            });
+        }
+
+        await this.prisma.player.update({
+            where: {
+                id: playerId
+            },
+            data: {
+                roomId: null,
+                Ready: false,
+                isFinished: false,
+            }
+        });
+
+        await this.updateRoomPlayers(player.roomId);
+
+        return { message: 'Successfully left room!' };
     }
 }   
