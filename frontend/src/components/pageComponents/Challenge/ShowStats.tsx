@@ -52,6 +52,8 @@ const ShowStats = ({
                 accuracy,
                 challengeId: searchParams.get('challengeId') || ''
             })
+
+            
         }
     }, [typed])
 

@@ -1,5 +1,4 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { send } from 'process';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MultiplayerGateWay } from './MultiplayerGateWay.gateway';
 import { Prisma } from '@prisma/client';
@@ -151,6 +150,7 @@ export class MultiplayerService {
             data: {
                 roomId: room.id,
                 Ready: false, // setting ready as false
+                isFinished: false,
             }
         });
 
@@ -185,6 +185,10 @@ export class MultiplayerService {
         }
 
         const playerId = req.user.player.id; // add later
+        
+        if(getPlayer.Player.id === playerId) {
+            throw new NotFoundException('you cannot invite yourself');
+        }
 
         const existingInvite = await this.prisma.invitation.findFirst({
             where: {

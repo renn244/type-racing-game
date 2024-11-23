@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import axiosFetch from "@/lib/axiosFetch"
+import { useMultiplayer } from "@/zustand/ChallengeResult.zustand"
 import { useMutation } from "@tanstack/react-query"
 import { Users } from "lucide-react"
 import { useState } from "react"
@@ -13,12 +14,13 @@ const MultiPlayerButton = () => {
     // buttons for all dialogs
     const [joinDialogOpen, setJoinDialogOpen] = useState(false)
     const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
-
+    
     const [searchParams, setSearchParams] = useSearchParams();
     const [usernameInvite, setUsernameInvite] = useState<string>('')
     const [ready, setReady] = useState<boolean>(searchParams.get('Ready') === 'true' || false) // this is the current player ready status
     const [roomId, setRoomId] = useState<string>('')
     const initialRoomId = searchParams.get('roomId') || '';
+    const gameStarted = useMultiplayer(state => state.GameStarted)
 
     const { mutate: Ready, isPending: isPendingReady } = useMutation({
         mutationKey: ['Ready'],
@@ -88,7 +90,7 @@ const MultiPlayerButton = () => {
     return (
         <div className="flex justify-center gap-4 mt-6">
             <Button 
-            disabled={isPendingReady}
+            disabled={isPendingReady || gameStarted}
             onFocus={(e) => e.target.blur()} // so that after being click will not be reclick when space are push
             onClick={() => Ready()}
             className="w-32">

@@ -16,7 +16,10 @@ type PlayerProgress = {
     roomId: string,
     username: string,
     profile: string,
-    Ready: boolean
+    Ready: boolean,
+    finished?: boolean,
+    position?: number,
+    stats?: { wpm: number, accuracy: number, time: number }
 }
 
 
@@ -41,13 +44,13 @@ const MultiPlayerProgress = () => {
             setProgress(response.data)
 
             return response.data
-        }
+        },
+        refetchOnWindowFocus: false
     })
 
     useEffect(() => {
         if (!user) return 
-        
-        // remove this socket and use the socket context
+
         if(!socket) return;
 
         socket.on('update-playerLobby', async data => {
@@ -64,11 +67,21 @@ const MultiPlayerProgress = () => {
             setGameStarted(true)
         })
 
+        socket.on('player-finished', async data => {
+            setProgress(prev => prev.map(player => {
+                if(player.playerId === data.playerId) {
+                    return {...player, finished: true, position: data.position, stats: data.stats}
+                }
+
+                return player
+            })
+        )
+        })
+
         // FIX LATER: this would slow down the app client
         socket.on('player-progress-update', async data => {
             setProgress(prev => prev.map(player => {
                 if(player.playerId === data.playerId) {
-                    console.log(progress)
                     return {...player, progress: data.progress}
                 }
 
@@ -93,9 +106,15 @@ const MultiPlayerProgress = () => {
             const prevParams = Object.fromEntries(searchParams.entries());
             setSearchParams({...prevParams, roomId: res.data.id })
         }
-        createRoom();
+        
+        if(user.Player.roomId) {
+            // update the search params
+            const prevParams = Object.fromEntries(searchParams.entries());
+            setSearchParams({...prevParams, roomId: user.Player.roomId, challengeId: user.Player.room.challengeId })
+        } else createRoom();
 
         return () => {
+            socket.off('update-playerLobby')
             socket.off('player-joined')
             socket.off('invitation-rejected')
             socket.off('game-started')
@@ -105,7 +124,7 @@ const MultiPlayerProgress = () => {
     return (
         <Card className="mb-6">
             <CardContent className="p-4">
-                Room Id: {searchParams.get('roomId')}
+                <span className="font-bold">Room Id:</span> {searchParams.get('roomId')}
                 <div className="space-y-4 p-3">
                     {progress?.map(competitor => (
                         <div key={competitor.playerId} className="space-y-2">
@@ -117,7 +136,23 @@ const MultiPlayerProgress = () => {
                                     </Avatar>
                                     <span className="font-medium">{competitor.username}</span>
                                     <span className="text-muted-foreground">•</span>
-                                    <span className={`font-bold ${competitor.Ready ? "text-green-700" : "text-red-700"}`}>{competitor.Ready ? "Ready" : "Not Ready" }</span>
+                                    {competitor.finished ? 
+                                    (
+                                        <div className="flex gap-3">
+                                            <span className="font-bold text-green-700">
+                                                Finished - {competitor.position} place
+                                            </span>
+                                            <div className="flex gap-3">
+                                                <span>WPM: {competitor.stats?.wpm}</span>
+                                                <span>Accuracy: {competitor.stats?.accuracy}%</span>
+                                                <span>Time: {competitor.stats?.time}s</span>
+                                            </div>
+                                        </div>
+                                    )
+                                    : 
+                                    <span className={`font-bold ${competitor.Ready ? "text-green-700" : "text-red-700"}`}>
+                                        {competitor.Ready ? "Ready" : "Not Ready" }
+                                    </span>}
                                 </div>
                             </div>
                             <Progress value={competitor.progress} className="h-2" />

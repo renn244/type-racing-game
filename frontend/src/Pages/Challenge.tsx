@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuthContext } from "@/Context/AuthContext"
+import { useSocketContext } from "@/Context/SocketContext"
 import useChallenge from "@/hooks/Challenge.hook"
 import { useChallengeResult } from "@/zustand/ChallengeResult.zustand"
 import { useEffect, useState } from "react"
@@ -28,11 +29,25 @@ const Challenge = () => {
     const [time, setTime] = useState(0);
     const [typed, setTyped] = useState<string>("")
 
+    const { socket } = useSocketContext();
     const { user } = useAuthContext()
     const { handleKeyDown, timetoStart, setTimetoStart, isLoading, challengeData } = useChallenge()
 
     useEffect(() => {
-        // the time and for listening to the keyboard 
+        if(finished && mode === "multiplayer") {
+            // update Progress to successful
+            if(!socket) return;
+            socket.emit('player-is-finished', {
+                roomId: searchParams.get('roomId'),
+                playerId: user?.Player?.id,
+                stats: {
+                    wpm: useChallengeResult.getState().wpm,
+                    accuracy: useChallengeResult.getState().accuracy,
+                    time: time
+                }
+            })
+        }
+
         if (!challengeData?.challenge || finished || timetoStart !== 0) return;
         const timer = setInterval(() => { 
             setTime((prev) => prev + 1);
@@ -52,6 +67,13 @@ const Challenge = () => {
         setMode(mode);
         const prevParams = Object.fromEntries(searchParams.entries());
         setSearchParams({...prevParams, mode: mode })
+        
+        // reset the challenge
+        setWpm(0)
+        setAccuracy(0)
+        setTyped('')
+        setTime(0)
+
         setTimetoStart(3);
     }
     
@@ -119,7 +141,8 @@ const Challenge = () => {
                         </CardContent>
                     </Card>
 
-                    <InputArea challenge={challengeData?.challenge} typed={typed} />
+                    {/* fix: fix the type undefined and strign not assignableto string  */}
+                    <InputArea challenge={challengeData?.challenge || ''} typed={typed} />
 
                     <VirtualKeyboard keyUp={keyUp} timetoStart={timetoStart} />
 

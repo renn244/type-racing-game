@@ -39,6 +39,13 @@ export type Player = {
     username: string,
     Ready?: boolean,
 
+    room: {
+        id: string,
+        name: string,
+        challengeId: string,
+        roomStatus: "waiting" | "started" | "finished",
+        createdAt: string,
+    }
     userId: string,
     roomId: string,
 }

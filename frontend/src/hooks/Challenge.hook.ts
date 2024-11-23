@@ -1,3 +1,4 @@
+import { useAuthContext } from "@/Context/AuthContext"
 import axiosFetch from "@/lib/axiosFetch"
 import { Challenge, ChallengeResultData } from "@/types/Challenge.type"
 import { useMultiplayer } from "@/zustand/ChallengeResult.zustand"
@@ -11,6 +12,7 @@ const useChallenge = () => {
     const GameStarted = useMultiplayer(state => state.GameStarted) // this is use for multiplayer
     const [timetoStart, setTimetoStart] = useState<number>(3)
     const [searchParams] = useSearchParams()
+    const { user } = useAuthContext()
 
     const calculateWPM = (challenge: string, time: number) => {
         return Math.round((challenge.length / 5) / (time / 60))
@@ -78,6 +80,10 @@ const useChallenge = () => {
     })
 
     useEffect(() => {
+        if(user?.Player?.room?.roomStatus === "started") {
+            setTimetoStart(0)
+        }
+
         if(timetoStart === 0 || isLoading || (!GameStarted && searchParams.get('mode') === 'multiplayer')) {
             return
         }   

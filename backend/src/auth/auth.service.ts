@@ -230,7 +230,11 @@ export class AuthService {
                     email: true,
                     userinfo: true,
                     preferences: true,
-                    Player: true,
+                    Player: {
+                        include: {
+                            room: true
+                        }
+                    },
                 },
             })
 
