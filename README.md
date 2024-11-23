@@ -6,15 +6,15 @@ Welcome to the project!
 **TYPE-RACING ONLINE GAME** is an engaging web-based multiplayer typing challenge where players compete against each other in real-time to type passages of text as quickly and accurately as possible. Built with a monorepo architecture, this game uses **NestJS** for the backend and **React** for the frontend, making use of modern technologies like **Socket io** for real-time communication.
 
 ## Features
-**Single-Player Mode:** Practice typing solo, aiming to beat personal records.
-**Customizable Game Settings:** Modify text difficulty, game duration, and select different typing themes.
-**Performance Stats & Analytics:** Track performance with stats, charts, and graphs.
-**Achievements:** Earn and display badges for milestones like achieving a certain WPM.
-**Profile:** User can see your information like challenges you recently take and your achievements.
-**Settings:** You can customize your account info and also change certain settings for the website configurations.
-**MultiFactor Authentication:** I also added MultiFA for better security.(you can activate it in the settings)
-**Challenges:** You can brose challenges and search through it and there is also certain categories for it.
-**Dashboard:** When you want to see your progress you will look at dashboard.
++ **Single-Player Mode:** Practice typing solo, aiming to beat personal records.
++ **Customizable Game Settings:** Modify text difficulty, game duration, and select different typing themes.
++ **Performance Stats & Analytics:** Track performance with stats, charts, and graphs.
++ **Achievements:** Earn and display badges for milestones like achieving a certain WPM.
++ **Profile:** User can see your information like challenges you recently take and your achievements.
++ **Settings:** You can customize your account info and also change certain settings for the website configurations.
++ **MultiFactor Authentication:** I also added MultiFA for better security.(you can activate it in the settings)
++ **Challenges:** You can brose challenges and search through it and there is also certain categories for it.
++ **Dashboard:** When you want to see your progress you will look at dashboard.
 
 ## SET UP
 
