@@ -4,7 +4,7 @@ import path from 'path'
 
 const __dirname = path.resolve();
 // https://vite.dev/config/
-export default defineConfig(({ mode}) => {
+export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
   
   const backendUrl = env.VITE_BACKEND_URL
