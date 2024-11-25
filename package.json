@@ -8,6 +8,9 @@
     "production": "cd frontend && npm run build && cd.. && cd backend && npm run build && npm run start:prod",
     "dev": "cd frontend && npm run dev && cd.. && cd backend && npm run start:dev",
 
+    "build": "cd frontend && npm install && npm run build && cd.. && cd backend && npm install && npm run build",
+    "start": "cd backend && npm run start:prod",
+
     "install:frontend": "cd frontend && npm install",
     "install:backend": "cd backend && npm install",
     "install": "npm run install:frontend && npm run install:backend"
