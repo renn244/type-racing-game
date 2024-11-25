@@ -1,0 +1,24 @@
+# you might want to change the ports to your own preference and also in deployment files
+# you can also change the volumes to your own preference
+# you can also change the context to your own preference
+
+services:
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app         # Bind mount for frontend
+      - /app/node_modules       # Ignore node_modules in the container
+
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app          # Bind mount for backend
+      - /app/node_modules       # Ignore node_modules in the container

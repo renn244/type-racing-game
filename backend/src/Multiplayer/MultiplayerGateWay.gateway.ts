@@ -118,6 +118,18 @@ export class MultiplayerGateWay implements OnGatewayInit, OnGatewayConnection, O
 
         const playerFinishedCount = getPlayers.players.filter(player => player.isFinished).length;
         
+        if(playerFinishedCount === getPlayers.players.length) {
+            // update the status of the room to finished
+            const updateRoom = await this.prisma.room.update({
+                where: {
+                    id: data.roomId
+                },
+                data: {
+                    roomStatus: "finished"
+                }
+            })
+        }
+
         getPlayers.players.map(async player => {
             const playerSocketId = await this.getSocketId(player.userId);
             this.io.to(playerSocketId).emit('player-finished', { 

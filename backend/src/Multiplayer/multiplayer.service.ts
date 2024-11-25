@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MultiplayerGateWay } from './MultiplayerGateWay.gateway';
-import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class MultiplayerService {

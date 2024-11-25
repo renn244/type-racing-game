@@ -18,12 +18,17 @@ Welcome to the project!
 
 ## SET UP
 
+## DOCKER DEPLOYMENT
+**NOTE:** if you are using docker as deployment (which are already setup in here) make sure to change the docker and static the backend
+
 ### to Clone
 ```bash
     git clone https://github.com/sheeshhhhhh/type-racing-game.git
 
 ```
+
 ### to install the dependencies in frontend
+**FOR DEVELOPMENT**
 Be in the root of the directory
 ```bash
     cd frontend
