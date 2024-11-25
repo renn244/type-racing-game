@@ -37,6 +37,9 @@ export default defineConfig(({ mode }: { mode: string}) => {
       alias: {
         '@': path.resolve(__dirname, './src')
       }
+    },
+    css: {
+      postcss: './postcss.config.js', // Ensures Vite uses the correct PostCSS config
     }
   }
 })
