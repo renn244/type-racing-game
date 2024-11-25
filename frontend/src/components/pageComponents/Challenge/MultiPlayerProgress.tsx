@@ -5,8 +5,7 @@ import { useAuthContext } from "@/Context/AuthContext"
 import { useSocketContext } from "@/Context/SocketContext"
 import axiosFetch from "@/lib/axiosFetch"
 import { useMultiplayer } from "@/zustand/ChallengeResult.zustand"
-import { useQuery } from "@tanstack/react-query"
-import { Dispatch, memo, SetStateAction, useEffect, useState } from "react"
+import { memo, useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { useSearchParams } from "react-router-dom"
 
@@ -31,9 +30,8 @@ const MultiPlayerProgress = () => {
     const { socket } = useSocketContext();
     const setGameStarted = useMultiplayer(set => set.setGameStarted);
 
-    const { data: players } = useQuery({
-        queryKey: ['room-players', searchParams.get('roomId')],
-        queryFn: async () => {
+    useEffect(() => {
+        const updateRoomPlayers = async () => {
             if(!roomId) return;
             const response = await axiosFetch.get(`/multiplayer/roomPlayers?roomId=${roomId}`)
 
@@ -44,9 +42,9 @@ const MultiPlayerProgress = () => {
             setProgress(response.data)
 
             return response.data
-        },
-        refetchOnWindowFocus: false
-    })
+        }
+        updateRoomPlayers()
+    }, ["roomId"])
 
     useEffect(() => {
         if (!user) return 
@@ -63,7 +61,7 @@ const MultiPlayerProgress = () => {
             toast.error(data)
         })
 
-        socket.on('game-started', async data => {
+        socket.on('game-started', async () => {
             setGameStarted(true)
         })
 

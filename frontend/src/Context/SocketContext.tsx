@@ -23,7 +23,7 @@ export const SocketProvider = ({
         // you don't get notified when you are not logged in
         if(!user) return;
 
-        const socket = io('http://localhost:5000', {
+        const socket = io('', {
             autoConnect: true,
             reconnection: true,
             reconnectionAttempts: 5,

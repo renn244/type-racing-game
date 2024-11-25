@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import useChallenge from "@/hooks/Challenge.hook"
 import { useChallengeResult } from "@/zustand/ChallengeResult.zustand"
 import { Clock, Target, Trophy } from "lucide-react"
-import { Dispatch, SetStateAction, useEffect, useState } from "react"
+import { Dispatch, SetStateAction, useEffect } from "react"
 import { useSearchParams } from "react-router-dom"
 
 type ShowStatsProps = {

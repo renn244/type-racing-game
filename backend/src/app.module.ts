@@ -12,13 +12,32 @@ import { MultiplayerModule } from './Multiplayer/multiplayer.module';
 import { MultiplayerGateWay } from './Multiplayer/MultiplayerGateWay.gateway';
 import { PrismaModule } from './prisma/prisma.module';
 import { UserModule } from './user/user.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+
+const imports = [
+  AuthModule,
+  PrismaModule,
+  ScheduleModule.forRoot(),
+  ConfigModule.forRoot({
+    isGlobal: true
+  }),
+  ChallengeModule,
+  UserModule,
+  AchievementModule,
+  GlobalAchievementModule,
+  EmailSenderModule,
+  MultiplayerModule
+]
+
+if(process.env.NODE_ENV === 'production') {
+  imports.push(ServeStaticModule.forRoot({
+    rootPath: join(__dirname, '../../', 'frontend', 'dist'),
+  }))
+}
 
 @Module({
-  imports: [AuthModule, PrismaModule, 
-    ScheduleModule.forRoot(),
-    ConfigModule.forRoot({
-      isGlobal: true
-    }), ChallengeModule, UserModule, AchievementModule, GlobalAchievementModule, EmailSenderModule, MultiplayerModule],
+  imports: imports,
   controllers: [AppController],
   providers: [AppService, MultiplayerGateWay],
 })

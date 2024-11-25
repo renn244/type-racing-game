@@ -14,6 +14,6 @@ export const StoragegetItem = <T=any> (key: string): T | undefined => {
     return item ? JSON.parse(item) : undefined    
 }
 
-export const StorageremoveItem = <T=any> (key: string): void => {
+export const StorageremoveItem = (key: string): void => {
     window.localStorage.removeItem(key)
 }
