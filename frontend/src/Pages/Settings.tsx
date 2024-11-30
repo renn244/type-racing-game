@@ -34,6 +34,22 @@ const Settings = () => {
         retry: 1
     }) 
 
+    if(isLoading) {
+        return (
+            <div className="min-h-[750px] bg-background">
+                <div className="container mx-auto px-3 py-6">
+                
+                    <h1 className="text-3xl font-bold mb-6">User Settings</h1>
+
+                    <div className="p-4 rounded-lg">
+                        <LoadingSpinner className="w-12 h-12" />
+                    </div>
+
+                </div>
+            </div>
+        )
+    }
+
     if (!data) {
         return (
             <div className="min-h-[750px] bg-background">

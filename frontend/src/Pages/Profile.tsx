@@ -65,7 +65,9 @@ const Profile = () => {
 
     if (isLoading) {
         return (
-            <LoadingSpinner />
+            <div className="container mx-auto px-4 py-8 min-h-[822px] flex items-center justify-center">
+                <LoadingSpinner />
+            </div>
         )
     }
 

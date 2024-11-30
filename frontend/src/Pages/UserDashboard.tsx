@@ -28,7 +28,11 @@ const UserDashboard = () => {
     ]
 
     if(isLoading) {
-        return <LoadingSpinner />
+        return (
+            <div className="container mx-auto min-h-[750px] flex items-center justify-center">
+                <LoadingSpinner />
+            </div>
+        )
     }
 
     return (
