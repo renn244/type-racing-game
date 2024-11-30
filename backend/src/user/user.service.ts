@@ -156,7 +156,8 @@ export class UserService {
     // fileLink should look like "http://localhost:5000/Uploads/e6c42da0152639392c0a_https___-28e83b26770f.jpg"
     async DeleteProfileFile(fileLink: string) {
         const fileName = fileLink.split('/')
-        const completePath = path.join(__dirname, '../..', 'Uploads', 'avatar', fileName[fileName.length - 1])
+        //                                                    // 'uploads' or 'Uploads'      // Actual file name
+        const completePath = path.resolve(__dirname, '../..', fileName[fileName.length - 2], fileName[fileName.length - 1])
 
         fs.unlink(completePath, (err) => {
             if (err) {
