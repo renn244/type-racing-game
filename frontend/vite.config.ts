@@ -12,9 +12,12 @@ export default defineConfig(({ mode }: { mode: string}) => {
 
   if(!backendUrl) throw new Error('Backend API URL is not defined')
 
-  return {
-    plugins: [react()],
-    server: {
+  const isProduction = env.NODE_ENV === 'production'
+
+  let proxy = {}
+
+  if(isProduction) {
+    proxy = {
       proxy: {
         // for the rest API endpoints
         '/api': {
@@ -29,9 +32,16 @@ export default defineConfig(({ mode }: { mode: string}) => {
           ws: true
         },
       },
+    }
+  }
+
+  return {
+    plugins: [react()],
+    server: {
+      ...proxy,
       // for docker
-      // host: "0.0.0.0",
-      // port: 5173
+      host: "0.0.0.0",
+      port: 5173
     },
     resolve: {
       alias: {

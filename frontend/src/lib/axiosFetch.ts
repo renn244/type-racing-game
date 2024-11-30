@@ -1,8 +1,10 @@
 import axios from 'axios';
 // replace with "/api" when deploying because of proxy in vite.config.ts
  
+const isProduction = import.meta.env.MODE === 'production'
+
 const axiosFetch = axios.create({
-    baseURL: '/api',
+    baseURL: isProduction ? '/api' : "http://localhost:5000/api",
     
     validateStatus: (status) => {
         if (status === 401) {
