@@ -29,7 +29,7 @@ export class UserController {
 
     @Post('updateAccount')
     @UseInterceptors(FileInterceptor('profile', {
-        storage: multerStrorage('Uploads/avatar')
+        storage: multerStrorage('uploads/avatar')
     }))
     async updateAccount(@Body() body: UpdateAccount, @UploadedFile() file: Express.Multer.File , @Request() req: any) {
         return this.userService.updateAccount(body, file, req)
