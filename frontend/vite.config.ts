@@ -12,7 +12,7 @@ export default defineConfig(({ mode }: { mode: string}) => {
 
   if(!backendUrl) throw new Error('Backend API URL is not defined')
 
-  const isProduction = env.NODE_ENV === 'production'
+  const isProduction = env.SOFTWARE_ENVIRONMENT === 'production'
 
   let proxy = {}
 

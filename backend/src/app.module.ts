@@ -30,7 +30,7 @@ const imports = [
   MultiplayerModule
 ]
 
-if(process.env.NODE_ENV === 'production') {
+if(process.env.SOFTWARE_ENVIRONMENT === 'production') {
   imports.push(ServeStaticModule.forRoot({
     rootPath: join(__dirname, '../../', 'frontend', 'dist'),
   }))
