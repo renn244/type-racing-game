@@ -28,7 +28,8 @@ const Profile = () => {
             }
 
             return response.data as UserProfile
-        }
+        },
+        retry: 1
     })
 
     // const user = {

@@ -15,7 +15,10 @@ export class UserService {
         private readonly challengeService: ChallengeService
     ) {}
 
-    async getProfile(userId: string) {
+    async getProfile(userId: string, req: any) {
+        const currentUserId = req.user.sub; // the one who requested the profile
+        const isOwner = currentUserId === userId
+
         let includeQuery = {}
         const privatePreferences = await this.prisma.userPreferences.findFirst({
             where: {
@@ -34,7 +37,7 @@ export class UserService {
             })
         }
 
-        if(!privatePreferences.privateProfile) {
+        if(!privatePreferences.privateProfile || isOwner) {
             includeQuery = {
                 ...includeQuery,
                 email: true,
@@ -50,10 +53,9 @@ export class UserService {
                     }
                 }
             }
-
         }
 
-        if(privatePreferences.showStats) {
+        if(privatePreferences.showStats || isOwner) {
             includeQuery = {
                 ...includeQuery,
                 Biometrics: true

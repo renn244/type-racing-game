@@ -13,8 +13,8 @@ export class UserController {
     ) {}
 
     @Get('getProfile')
-    async getProfile(@Query('userId') userId: string) {
-        return this.userService.getProfile(userId)
+    async getProfile(@Request() req: any, @Query('userId') userId: string) {
+        return this.userService.getProfile(userId, req)
     }
 
     @Get('getDashboardInfo')

@@ -36,7 +36,9 @@ const MultiPlayerProgress = () => {
             const response = await axiosFetch.get(`/multiplayer/roomPlayers?roomId=${roomId}`)
 
             if(response.status >= 400) {
-                toast.error(response.data.message)
+                setSearchParams({...Object.fromEntries(searchParams.entries()), roomId: '', mode: 'single' })
+                toast.error("an error occured!")
+                return window.location.reload()
             }
 
             setProgress(response.data)
@@ -44,7 +46,7 @@ const MultiPlayerProgress = () => {
             return response.data
         }
         updateRoomPlayers()
-    }, ["roomId"])
+    }, [roomId])
 
     useEffect(() => {
         if (!user) return 

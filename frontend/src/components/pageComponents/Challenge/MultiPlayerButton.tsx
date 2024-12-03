@@ -77,7 +77,7 @@ const MultiPlayerButton = () => {
             // changing the search Params
             const prevParams = Object.fromEntries(searchParams.entries());
             setSearchParams({...prevParams, roomId: roomId, mode: 'multiplayer', challengeId: response.data.challengeId })
-            setInviteDialogOpen(false)
+            setJoinDialogOpen(false)
             setRoomId('')
 
             return toast.success('Joined Room!') 
@@ -178,7 +178,7 @@ const MultiPlayerButton = () => {
             </Dialog>
 
             <Button
-            disabled={isPendingLeave || gameStarted}
+            disabled={isPendingLeave}
             onClick={() => Leave()}
             className="w-32">
                 {isPendingLeave ? <LoadingSpinner /> : "Leave"}

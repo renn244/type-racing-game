@@ -12,7 +12,6 @@ async function bootstrap() {
   // be careful with the path here, it should be relative to the dist folder
   // look at the name in docker-compose.yml
   // app for docker and backend for localhost
-  console.log(join(__dirname, '../', 'uploads/'))
   app.useStaticAssets(join(__dirname, '../', 'uploads/'), {
     prefix: '/api/Uploads'
   })

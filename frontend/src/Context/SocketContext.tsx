@@ -23,7 +23,10 @@ export const SocketProvider = ({
         // you don't get notified when you are not logged in
         if(!user) return;
 
-        const socket = io('', {
+        const isProduction = import.meta.env.VITE_SOFTWARE_ENVIRONMENT === 'production';
+        const socketConnection = isProduction ? '' : 'http://localhost:5000';
+        console.log(import.meta.env.VITE_SOFTWARE_ENVIRONMENT)
+        const socket = io(socketConnection, {
             autoConnect: true,
             reconnection: true,
             reconnectionAttempts: 5,

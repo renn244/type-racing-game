@@ -30,7 +30,6 @@ const PrivacyTab = ({
             const response = await axiosFetch.post('/user/updatePrivacySettings', {
                 privateProfile: privateProfile,
                 showStats: showStats,
-                multiFA: multiFactor
             })
 
             return response.data

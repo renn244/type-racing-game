@@ -91,7 +91,7 @@ export class MultiplayerService {
                     Ready: player.Ready
                 }
             ))
-        } catch {
+        } catch(e) {
             throw new InternalServerErrorException("error try refreshing the page!")
         }
     }
@@ -373,7 +373,6 @@ export class MultiplayerService {
         }
 
         if(room.hostId === playerId && room.players.length > 1) {
-            console.log('host is leaving');
             // if the host is leaving then the room is deleted
             await this.prisma.room.update({
                 where: {
@@ -384,7 +383,6 @@ export class MultiplayerService {
                 }
             });
         } else if(room.hostId === playerId) { 
-            console.log('host is leaving');
             // if the host is leaving and he is the only one then the room is deleted
             await this.prisma.room.delete({
                 where: {

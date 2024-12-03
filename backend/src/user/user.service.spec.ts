@@ -51,13 +51,13 @@ describe('UserService', () => {
         profile: true,
       }
     }
-
+    const req = { user: '3131' }
     // the privateProfile is true and showStats is false // all private
     it('should just return id, username, and profile because privateProfile is true and showStats is false', async () => {
       jest.spyOn(prisma.userPreferences, 'findFirst').mockResolvedValue({ showStats: false, privateProfile: true } as any)
       jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({} as any) // this does not matter for this test
 
-      const result = await service.getProfile(userId)
+      const result = await service.getProfile(userId, req)
       expect(prisma.user.findUnique).toHaveBeenCalledWith(prismaQuery)
     })
 
@@ -66,7 +66,7 @@ describe('UserService', () => {
       jest.spyOn(prisma.userPreferences, 'findFirst').mockResolvedValue({ showStats: false, privateProfile: false } as any)
       jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({} as any) // this does not matter for this test
 
-      const result = await service.getProfile(userId)
+      const result = await service.getProfile(userId, req)
       expect(prisma.user.findUnique).toHaveBeenCalledWith({
         ...prismaQuery,
         select: {
@@ -83,7 +83,7 @@ describe('UserService', () => {
       jest.spyOn(prisma.userPreferences, 'findFirst').mockResolvedValue({ showStats: true, privateProfile: true } as any)
       jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({} as any) // this does not matter for this test
 
-      const result = await service.getProfile(userId)
+      const result = await service.getProfile(userId, req)
       expect(prisma.user.findUnique).toHaveBeenCalledWith({
         ...prismaQuery,
         select: {
@@ -97,7 +97,7 @@ describe('UserService', () => {
       
       jest.spyOn(prisma.userPreferences, 'findFirst').mockResolvedValue(undefined)
       
-      await expect(service.getProfile(userId)).rejects.toThrow(new NotFoundException({
+      await expect(service.getProfile(userId, req)).rejects.toThrow(new NotFoundException({
         name: 'user',
         message: 'user is not found'
       })) 
