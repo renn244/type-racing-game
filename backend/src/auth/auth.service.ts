@@ -1,4 +1,4 @@
-import { BadRequestException, GoneException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, GoneException, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import RegisterDto from './dto/Register.dto';
 import * as bcrypt from 'bcrypt';
@@ -7,6 +7,8 @@ import { JwtService } from '@nestjs/jwt';
 import { uuid } from 'uuidv4';
 import { AchievementService } from 'src/achievement/achievement.service';
 import { EmailSenderService } from 'src/email-sender/email-sender.service';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +16,8 @@ export class AuthService {
         private readonly jwtService: JwtService,
         private readonly prisma: PrismaService,
         private readonly achievementService: AchievementService,
-        private readonly emailSender: EmailSenderService
+        private readonly emailSender: EmailSenderService,
+        @Inject(CACHE_MANAGER) private cacheManager: Cache
     ) {}
 
     async register({ username, email, password, confirmPassword }: RegisterDto) {
@@ -219,6 +222,12 @@ export class AuthService {
     async checkUser(req: any) {
         const userId = req.user.sub;
         if(userId) {
+            // check the cache
+            const userCache = await this.cacheManager.get(`${userId}`)
+
+            if(userCache) {
+                return userCache
+            }
             const getUser = await this.prisma.user.findFirst({
                 where: {
                     id: userId
@@ -237,6 +246,10 @@ export class AuthService {
                     },
                 },
             })
+
+            if(getUser) {
+                await this.cacheManager.set(`${userId}`, getUser)
+            }
 
             if (!getUser) {
                 throw new GoneException({

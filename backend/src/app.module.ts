@@ -13,6 +13,7 @@ import { MultiplayerGateWay } from './Multiplayer/MultiplayerGateWay.gateway';
 import { PrismaModule } from './prisma/prisma.module';
 import { UserModule } from './user/user.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { CacheModule } from '@nestjs/cache-manager';
 import { join } from 'path';
 
 const imports = [
@@ -21,6 +22,10 @@ const imports = [
   ScheduleModule.forRoot(),
   ConfigModule.forRoot({
     isGlobal: true
+  }),
+  CacheModule.register({
+    isGlobal: true,
+    ttl: 60 * 1000, // 60 seconds
   }),
   ChallengeModule,
   UserModule,

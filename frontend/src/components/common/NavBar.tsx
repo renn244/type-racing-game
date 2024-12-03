@@ -12,6 +12,7 @@ import {
 import Profile from "./Profile"
 import { LogOut, Settings2, Sword, UserRound } from "lucide-react"
 import ThemeSwitch from "./ThemeSwitch"
+import logo from '../../../public/logo.png'
 
 const NavBar = () => {
     const [isOpen, setIsOpen] = useState(false)
