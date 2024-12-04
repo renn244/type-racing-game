@@ -92,6 +92,8 @@ export type UserPreference = {
     theme: "light" | "dark",
     soundEffects: true,
     keyboardLayout: "qwerty" | "dvorak" | "dvorak",
+    emailNotifications: boolean,
+    challengeReminders: boolean,
 }
 
 export type UserSettings = {

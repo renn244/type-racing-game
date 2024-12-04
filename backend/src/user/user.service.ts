@@ -1,4 +1,4 @@
-import { GoneException, Injectable, NotFoundException } from '@nestjs/common';
+import { GoneException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ChallengeService } from '../challenge/challenge.service';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt'
@@ -6,14 +6,20 @@ import { Update2FA, UpdateAccount, UpdatePassword, UpdatePrivacy, UpdateTypePref
 import { provideSecret } from '../util/ProvideSecret';
 import * as fs from 'fs'
 import * as path from 'path'
-
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class UserService {
     constructor(
         private readonly prisma: PrismaService,
-        private readonly challengeService: ChallengeService
+        private readonly challengeService: ChallengeService,
+        @Inject(CACHE_MANAGER) private cacheManager: Cache
     ) {}
+
+    private async deleteCache(key: string) {
+        await this.cacheManager.del(key);
+    }
 
     async getProfile(userId: string, req: any) {
         const currentUserId = req.user.sub; // the one who requested the profile
@@ -200,6 +206,8 @@ export class UserService {
             }
         })
 
+        this.deleteCache(userId)
+
         return updateProfile
     }
 
@@ -224,6 +232,8 @@ export class UserService {
             }
         })
 
+        this.deleteCache(userId)
+
         return updateInformation
     } 
 
@@ -238,6 +248,8 @@ export class UserService {
                 ...body
             }
         })
+
+        this.cacheManager.del(userId)
 
         return updateUserinfo
     }
@@ -296,7 +308,26 @@ export class UserService {
             }
         })
 
+        this.deleteCache(userId)
+
         return updateTypePreferences
+    }
+
+    async updateNotificationPreferences(body: any, req: any) {
+        const userId = req.user.sub;
+
+        const updateNotificationPrisma = await this.prisma.userPreferences.update({
+            where: {
+                userId: userId
+            },
+            data: {
+                ...body
+            }
+        })
+
+        this.deleteCache(userId)
+
+        return updateNotificationPrisma
     }
 
     async updatePrivacySettings(body: UpdatePrivacy, req: any) {
@@ -310,6 +341,8 @@ export class UserService {
                 ...body
             }
         })
+
+        this.deleteCache(userId)
 
         return updatePrivacy
     }
@@ -326,6 +359,8 @@ export class UserService {
             }
         })
 
+        this.deleteCache
+            
         return update2FA
     }
 }

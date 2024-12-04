@@ -53,11 +53,16 @@ class TypePreferences {
 export class UpdateTypePreferences extends PartialType(TypePreferences) {}
 
 export class UpdateNotification {
-
+    @IsBoolean()
+    emailNotifications: boolean;
+    @IsBoolean()
+    challengeReminders: boolean;
 }
 
 export class UpdatePrivacy {
+    @IsBoolean()
     privateProfile: boolean;
+    @IsBoolean()
     showStats: boolean;
 }
 

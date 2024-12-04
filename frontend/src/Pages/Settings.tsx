@@ -95,7 +95,10 @@ const Settings = () => {
                             initialKeyboardLayout={data.preferences.keyboardLayout}
                             />
 
-                            <NotificationTab />
+                            <NotificationTab 
+                            initialEmailNotifications={data.preferences.emailNotifications}
+                            initialChallengeReminders={data.preferences.challengeReminders}
+                            />
 
                             <PrivacyTab 
                             initialPrivateprofile={data.preferences.privateProfile}

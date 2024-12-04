@@ -50,6 +50,11 @@ export class UserController {
         return this.userService.updateTypePreferences(body, req)
     }
 
+    @Post('updateNotificationPreferences')
+    async updateNotificationPreferences(@Body() body: any, @Request() req: any) {
+        return this.userService.updateNotificationPreferences(body, req)
+    }
+
     @Post('updatePrivacySettings')
     async updatePrivacySettings(@Body() body: UpdatePrivacy, @Request() req: any) {
         return this.userService.updatePrivacySettings(body, req)

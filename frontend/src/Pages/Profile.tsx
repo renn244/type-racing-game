@@ -32,38 +32,6 @@ const Profile = () => {
         retry: 1
     })
 
-    // const user = {
-    //     username: "Jane Doe",
-    //     email: "speedtyper",
-    //     profile: "/placeholder.svg",
-    //     bio: "Passionate about improving my typing skills and competing in challenges. Always striving for that perfect accuracy!",
-    //     createdAt: "January 2023",
-    //     location: "New York, USA",
-    //     wpm: 85,
-    //     accuracy: 98.5,
-    //     totalTests: 500,
-    //     totalTime: "100 hours",
-    //     rank: "Expert",
-    //     achievements: [
-    //       { id: 1, name: "Speed Demon", description: "Achieve 100 WPM", progress: 85 },
-    //       { id: 2, name: "Accuracy Master", description: "Maintain 99% accuracy", progress: 95 },
-    //       { id: 3, name: "Marathon Typer", description: "Type for 24 hours total", progress: 70 },
-    //       { id: 4, name: "Challenge Champion", description: "Win 50 multiplayer challenges", progress: 60 },
-    //     ],
-    //     recentChallenges: [
-    //       { id: 1, name: "Daily Sprint", wpm: 88, accuracy: 97.5, date: "2024-02-01" },
-    //       { id: 2, name: "Code Master", wpm: 75, accuracy: 99, date: "2024-01-30" },
-    //       { id: 3, name: "Literature Challenge", wpm: 82, accuracy: 98.2, date: "2024-01-28" },
-    //     ],
-    //     stats: [
-    //       { name: "Fastest WPM", value: 110, icon: Zap },
-    //       { name: "Avg. Accuracy", value: "98.5%", icon: Target },
-    //       { name: "Challenges Won", value: 75, icon: Trophy },
-    //       { name: "Total Tests", value: 500, icon: Flag },
-    //     ]
-    //   }
-
-
     if (isLoading) {
         return (
             <div className="container mx-auto px-4 py-8 min-h-[822px] flex items-center justify-center">

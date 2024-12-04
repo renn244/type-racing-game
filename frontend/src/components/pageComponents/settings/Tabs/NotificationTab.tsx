@@ -8,19 +8,23 @@ import { useMutation } from "@tanstack/react-query";
 import axiosFetch from "@/lib/axiosFetch";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 
-const NotificationTab = () => {
-    const [emailNotifications, setEmailNotifications] = useState<boolean>(true)
-    const [pushNotifications,  setPushNotifications] = useState<boolean>(true)
-    const [smsNotifications,   setSmsNotifications] = useState<boolean>(true)
-    const [challengeReminders, setChallengeReminders] = useState<boolean>(true)
+type NotificationTabProps = {
+    initialEmailNotifications: boolean,
+    initialChallengeReminders: boolean
+}
+
+const NotificationTab = ({
+    initialEmailNotifications,
+    initialChallengeReminders
+}: NotificationTabProps) => {
+    const [emailNotifications, setEmailNotifications] = useState<boolean>(initialEmailNotifications || false)
+    const [challengeReminders, setChallengeReminders] = useState<boolean>(initialChallengeReminders || false)
 
     const { mutate: saveChanges, isPending } = useMutation({
         mutationKey: ['updateNotificationPreferences'],
         onMutate: async () => {
             const response = await axiosFetch.post('/user/updateNotificationPreferences', {
                 emailNotifications: emailNotifications,
-                pushNotifications: pushNotifications,
-                smsNotifications: smsNotifications,
                 challengeReminders: challengeReminders
             })
 
@@ -42,16 +46,6 @@ const NotificationTab = () => {
                     <div className="flex items-center justify-between">
                         <Label htmlFor="email-notifications">Email Notifications</Label>
                         <Switch checked={emailNotifications} onCheckedChange={setEmailNotifications} id="email-notifications" />
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                        <Label htmlFor="push-notifications">Push Notifications</Label>
-                        <Switch checked={pushNotifications} onCheckedChange={setPushNotifications} id="push-notifications" />                         
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                        <Label htmlFor="sms-notifications">SMS Notifications</Label>
-                        <Switch checked={smsNotifications} onCheckedChange={setSmsNotifications} id="sms-notifications" />
                     </div>
 
                     <div className="flex items-center justify-between">

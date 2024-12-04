@@ -117,19 +117,22 @@ const Challenge = () => {
                     <Card className="mb-6">
                         <CardContent className="p-4" >
                             {isLoading ? <LoadingSpinner /> : 
-                                <p className="text-lg leading-relaxed font-medium ">
+                                <p className={`text-[${user?.preferences ? user.preferences.fontSize : 18}px] leading-relaxed font-medium `}>
                                     {challengeData?.challenge.split("").map((char, index) => {
                                         const isType = index < typed.length;
                                         const isCorrect = isType &&  typed[index] === char;
+                                        const isAboutToType = index === typed.length;
                                     
                                         return (
                                             <span
                                             key={index}
-                                            className={`${
+                                            className={`
+                                                ${isAboutToType && 'underline underline-offset-2 mx-[1px]'} 
+                                                ${
                                                 isType 
                                                 ? isCorrect 
                                                     ? "text-primary" 
-                                                    : "text-red-600" 
+                                                    : "text-red-600 underline underline-offset-2 underline-red-500" 
                                                 : "text-muted-foreground"
                                             }`}
                                             >

@@ -60,9 +60,12 @@ model UserPreferences {
   showStats         Boolean @default(true)
 
   theme             String   @default("light")
-  fontSize          Int   @default(16)
+  fontSize          Int   @default(18)
   soundEffects      Boolean @default(true)
   keyboardLayout    String   @default("qwerty")
+
+  emailNotifications Boolean @default(false)
+  challengeReminders Boolean @default(false)
 
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
