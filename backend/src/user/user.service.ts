@@ -3,17 +3,18 @@ import { ChallengeService } from '../challenge/challenge.service';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt'
 import { Update2FA, UpdateAccount, UpdatePassword, UpdatePrivacy, UpdateTypePreferences, UpdateUserInfo } from './dto/UpdateAccount.dto';
-import { provideSecret } from '../util/ProvideSecret';
 import * as fs from 'fs'
 import * as path from 'path'
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { FileUploadService } from 'src/file-upload/file-upload.service';
 
 @Injectable()
 export class UserService {
     constructor(
         private readonly prisma: PrismaService,
         private readonly challengeService: ChallengeService,
+        private readonly fileUploadService: FileUploadService,
         @Inject(CACHE_MANAGER) private cacheManager: Cache
     ) {}
 
@@ -163,24 +164,19 @@ export class UserService {
 
     // fileLink should look like "http://localhost:5000/Uploads/e6c42da0152639392c0a_https___-28e83b26770f.jpg"
     async DeleteProfileFile(fileLink: string) {
-        const fileName = fileLink.split('/')
-        //                                                    // 'uploads' or 'Uploads'      // Actual file name
-        const completePath = path.resolve(__dirname, '../..', fileName[fileName.length - 2], fileName[fileName.length - 1])
+        try {
 
-        fs.unlink(completePath, (err) => {
-            if (err) {
-                // handleError
-                return 'failed to delete'
-            }
-        })
+            const publicId = fileLink.split("/").pop().split(".")[0];
+            const deleteResult = await this.fileUploadService.deleteFile(publicId)
 
-        return fileName[fileName.length - 1] + " got deleted"
+            return deleteResult
+        } catch (error) {
+            throw new Error("failed to delete")
+        }
     }
 
     async uploadProfile(profile: Express.Multer.File, userId: string) {
         
-        const pathFile = process.env.BASE_BACKEND_URL + "/" +  profile.path.split('\\').join('/')
-
         const doesProfileExist = await this.prisma.user.findFirst({
             where: {
                 id: userId
@@ -194,12 +190,14 @@ export class UserService {
             this.DeleteProfileFile(doesProfileExist.profile)
         }
 
+        const cloudUpload = await this.fileUploadService.uploadFile(profile)
+
         const updateProfile = await this.prisma.user.update({
             where: {
                 id: userId
             },
             data: {
-                profile: pathFile
+                profile: cloudUpload.secure_url
             },
             select: {
                 profile: true

@@ -4,6 +4,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Update2FA, UpdateAccount, UpdatePassword, UpdatePrivacy, UpdateTypePreferences, UpdateUserInfo } from './dto/UpdateAccount.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerStrorage } from 'src/util/MulterStorage';
+import * as multer from 'multer'
 
 @UseGuards(JwtAuthGuard)
 @Controller('user')
@@ -29,7 +30,7 @@ export class UserController {
 
     @Post('updateAccount')
     @UseInterceptors(FileInterceptor('profile', {
-        storage: multerStrorage('uploads/avatar')
+        storage: multer.memoryStorage(),
     }))
     async updateAccount(@Body() body: UpdateAccount, @UploadedFile() file: Express.Multer.File , @Request() req: any) {
         return this.userService.updateAccount(body, file, req)
