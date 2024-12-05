@@ -19,14 +19,15 @@ export const SocketProvider = ({
     const [socket, setSocket] = useState<Socket | undefined>(undefined);
     const { user } = useAuthContext();
 
+    // maybe make it a singleton?? like not closing the socket
+
     useEffect(() => {
-        // you don't get notified when you are not logged in
         if(!user) return;
 
         const isProduction = import.meta.env.VITE_SOFTWARE_ENVIRONMENT === 'production';
         const socketConnection = isProduction ? '' : 'http://localhost:5000';
-        console.log(import.meta.env.VITE_SOFTWARE_ENVIRONMENT)
-        const socket = io(socketConnection, {
+
+        const currentSocket = io(socketConnection, {
             autoConnect: true,
             reconnection: true,
             reconnectionAttempts: 5,
@@ -35,19 +36,20 @@ export const SocketProvider = ({
                 userId: user?.id
             }
         })
-        setSocket(socket);
+        setSocket(currentSocket);
         
-        socket.on('connect', () => {
+        currentSocket.on('connect', () => {
             // maybe do somethign??
             console.log('connected')
         })
 
-        socket.on('disconnect', () => {
-            toast.error('Disconnected from server')
-        })
+        // for development purposes
+        // currentSocket.on('disconnect', () => {
+        //     toast.error('Disconnected from server')
+        // })
         
         return () => {
-            socket.close();
+            currentSocket.close();
         }
     }, [user])
 

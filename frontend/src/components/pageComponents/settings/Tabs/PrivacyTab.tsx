@@ -26,7 +26,7 @@ const PrivacyTab = ({
 
     const { mutate: saveChanges, isPending } = useMutation({
         mutationKey: ['updatePrivacySettings'],
-        onMutate: async () => {
+        mutationFn: async () => {
             const response = await axiosFetch.post('/user/updatePrivacySettings', {
                 privateProfile: privateProfile,
                 showStats: showStats,

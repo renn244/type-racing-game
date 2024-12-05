@@ -22,7 +22,7 @@ const NotificationTab = ({
 
     const { mutate: saveChanges, isPending } = useMutation({
         mutationKey: ['updateNotificationPreferences'],
-        onMutate: async () => {
+        mutationFn: async () => {
             const response = await axiosFetch.post('/user/updateNotificationPreferences', {
                 emailNotifications: emailNotifications,
                 challengeReminders: challengeReminders

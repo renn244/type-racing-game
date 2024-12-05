@@ -6,11 +6,12 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import React, { useState } from "react"
 import FileUpload from "@/components/common/FileUpload"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import axiosFetch from "@/lib/axiosFetch"
 import toFormData from "@/lib/toFomData.util"
 import LoadingSpinner from "@/components/common/LoadingSpinner"
 import ChangePasswordModal from "../ChangePasswordModal"
+import toast from "react-hot-toast"
 
 type AccountTabProps = {
     initialProfile?: string | File,
@@ -37,6 +38,8 @@ const AccountTab = ({
         email: initialEmail
     })
 
+    const queryClient = useQueryClient()
+
     const changeEvent = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUserInfo({
             ...userInfo,
@@ -46,7 +49,7 @@ const AccountTab = ({
 
     const { mutate:saveChanges, isPending } = useMutation({
         mutationKey: ['updateUser'],
-        onMutate: async () => {
+        mutationFn: async () => {
             const formData = toFormData({
                 ...userInfo,
                 profile: file
@@ -57,7 +60,18 @@ const AccountTab = ({
                 }
             })
 
+            if(response.status >= 400) {
+                throw new Error(response.data.messsage)
+            }
+
             return response.data
+        },
+        onSuccess: async () => {
+            toast.success("successfully updated account")
+            await queryClient.invalidateQueries({ queryKey: ['user'] })
+        },
+        onError: (error) => {
+            toast.error(error.message)
         }
     })
 

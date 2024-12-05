@@ -29,7 +29,7 @@ const TypePreferencesTab = ({
 
     const { mutate: saveChanges, isPending } = useMutation({
         mutationKey: ['updateTypePreferences'],
-        onMutate: async () => {
+        mutationFn: async () => {
             const response = await axiosFetch.post('/user/updateTypePreferences', {
                 soundEffects: soundEffect,
                 fontSize: fontSize,
