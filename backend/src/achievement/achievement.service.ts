@@ -1,7 +1,6 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { AchievementCategory, Prisma, TaskType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { InternalServerError } from 'openai';
 
 @Injectable()
 export class AchievementService {

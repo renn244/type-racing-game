@@ -15,6 +15,7 @@ import { UserModule } from './user/user.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { CacheModule } from '@nestjs/cache-manager';
 import { join } from 'path';
+import { FileUploadModule } from './file-upload/file-upload.module';
 
 const imports = [
   AuthModule,
@@ -27,6 +28,7 @@ const imports = [
     isGlobal: true,
     ttl: 60 * 1000, // 60 seconds
   }),
+  FileUploadModule,
   ChallengeModule,
   UserModule,
   AchievementModule,
