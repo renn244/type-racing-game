@@ -7,7 +7,7 @@ Welcome to the project!
 
 ## Features
 + **Single-Player Mode:** Practice typing solo, aiming to beat personal records.
-+ **Customizable Game Settings:** Modify text difficulty, game duration, and select different typing themes.
++ **Customizable Game Settings:** Modify text difficulty, game duration, and select different typing themes. (not implemented)
 + **Performance Stats & Analytics:** Track performance with stats, charts, and graphs.
 + **Achievements:** Earn and display badges for milestones like achieving a certain WPM.
 + **Profile:** User can see your information like challenges you recently take and your achievements.
